@@ -34,6 +34,7 @@ export async function POST(req: NextRequest) {
   // ── Buscar o crear usuario ───────────────────────────────────────
   let userId:    string
   let isNewUser: boolean
+  let password:  string | null = null
 
   const { data: existingUsers } = await supabase.auth.admin.listUsers()
   const existingUser = existingUsers?.users?.find(u => u.email === email)
@@ -42,18 +43,16 @@ export async function POST(req: NextRequest) {
     userId    = existingUser.id
     isNewUser = false
 
-    // Actualizar perfil si cambió el nombre
     await supabase
       .from('profiles')
       .update({ full_name, instagram_username: instagram_username ?? null })
       .eq('id', userId)
 
   } else {
-    // Crear usuario con contraseña temporal (debe cambiarla)
-    const tempPassword = crypto.randomUUID().slice(0, 16)
+    password = crypto.randomUUID().slice(0, 16)
     const { data: newUser, error: createError } = await supabase.auth.admin.createUser({
       email,
-      password:      tempPassword,
+      password,
       email_confirm: true,
     })
 
@@ -65,12 +64,11 @@ export async function POST(req: NextRequest) {
     userId    = newUser.user.id
     isNewUser = true
 
-    // Upsert perfil (el trigger de Supabase puede ya haberlo creado)
     await supabase.from('profiles').upsert({
       id:                 userId,
       full_name,
       instagram_username: instagram_username ?? null,
-      must_change_pass:   true,
+      must_change_pass:   false,
       is_admin:           false,
     })
   }
@@ -126,9 +124,10 @@ export async function POST(req: NextRequest) {
   }
 
   return NextResponse.json({
-    success:           true,
-    user_id:           userId,
-    is_new_user:       isNewUser,
-    subjects_granted:  grantedSubjects,
+    success:          true,
+    user_id:          userId,
+    is_new_user:      isNewUser,
+    subjects_granted: grantedSubjects,
+    password,
   })
 }
