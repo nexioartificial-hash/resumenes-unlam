@@ -1,9 +1,9 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 
-export default function CheckoutSuccessPage() {
+function SuccessContent() {
   const params             = useSearchParams()
   const paymentId          = params.get('payment_id')
   const externalReference  = params.get('external_reference') ?? ''
@@ -24,7 +24,6 @@ export default function CheckoutSuccessPage() {
       .then(r => r.json())
       .then((data: { status?: string; reset_link?: string }) => {
         if (data.reset_link) setResetLink(data.reset_link)
-        // Obtener email del external_reference
         try {
           const meta = JSON.parse(atob(externalReference)) as { email: string }
           setEmail(meta.email)
@@ -104,5 +103,17 @@ export default function CheckoutSuccessPage() {
         )}
       </div>
     </div>
+  )
+}
+
+export default function CheckoutSuccessPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-fondo">
+        <div className="w-10 h-10 border-4 border-verde border-t-transparent rounded-full animate-spin mx-auto" />
+      </div>
+    }>
+      <SuccessContent />
+    </Suspense>
   )
 }

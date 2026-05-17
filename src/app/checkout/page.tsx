@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 
 interface Subject {
@@ -13,7 +13,7 @@ interface Subject {
   department: string
 }
 
-export default function CheckoutPage() {
+function CheckoutContent() {
   const params   = useSearchParams()
   const router   = useRouter()
 
@@ -144,5 +144,17 @@ export default function CheckoutPage() {
         </p>
       </div>
     </div>
+  )
+}
+
+export default function CheckoutPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-fondo">
+        <p className="text-tinta/60">Cargando...</p>
+      </div>
+    }>
+      <CheckoutContent />
+    </Suspense>
   )
 }
