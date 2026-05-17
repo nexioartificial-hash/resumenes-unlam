@@ -46,9 +46,14 @@ yarn-error.log*
 .mcp.json
 PLAN.md
 
+# Credenciales locales — nunca commitear
+.secrets.md
+
 # PDFs locales
 *.pdf
 
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+.vercel

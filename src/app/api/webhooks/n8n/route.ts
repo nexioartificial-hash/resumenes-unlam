@@ -8,6 +8,7 @@ const schema = z.object({
   full_name:           z.string().min(1),
   subject_slugs:       z.array(z.string()).min(1),
   instagram_username:  z.string().optional(),
+  contact_id:          z.string().optional(),
 })
 
 export async function POST(req: NextRequest) {
@@ -28,7 +29,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Datos inválidos', issues: parsed.error.issues }, { status: 400 })
   }
 
-  const { email, full_name, subject_slugs, instagram_username } = parsed.data
+  const { email, full_name, subject_slugs, instagram_username, contact_id } = parsed.data
   const supabase = createAdminClient()
 
   // ── Buscar o crear usuario ───────────────────────────────────────
@@ -45,7 +46,7 @@ export async function POST(req: NextRequest) {
 
     await supabase
       .from('profiles')
-      .update({ full_name, instagram_username: instagram_username ?? null })
+      .update({ full_name, instagram_username: instagram_username ?? null, ...(contact_id ? { sendpulse_contact_id: contact_id } : {}) })
       .eq('id', userId)
 
   } else {
@@ -65,11 +66,12 @@ export async function POST(req: NextRequest) {
     isNewUser = true
 
     await supabase.from('profiles').upsert({
-      id:                 userId,
+      id:                    userId,
       full_name,
-      instagram_username: instagram_username ?? null,
-      must_change_pass:   false,
-      is_admin:           false,
+      instagram_username:    instagram_username ?? null,
+      sendpulse_contact_id:  contact_id ?? null,
+      must_change_pass:      false,
+      is_admin:              false,
     })
   }
 
@@ -103,23 +105,27 @@ export async function POST(req: NextRequest) {
     grantedSubjects.push(subject.name)
   }
 
-  // ── Enviar email ─────────────────────────────────────────────────
-  try {
-    if (isNewUser) {
-      const { data: linkData } = await supabase.auth.admin.generateLink({
-        type:    'recovery',
-        email,
-        options: { redirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/change-password` },
-      })
-      const resetLink = (linkData as { properties?: { action_link?: string } })?.properties?.action_link
-        ?? `${process.env.NEXT_PUBLIC_APP_URL}/reset-password`
+  // ── Generar link de acceso (para usuarios nuevos) ───────────────
+  let resetLink: string | null = null
 
+  if (isNewUser) {
+    const { data: linkData } = await supabase.auth.admin.generateLink({
+      type:    'recovery',
+      email,
+      options: { redirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/change-password` },
+    })
+    resetLink = (linkData as { properties?: { action_link?: string } })?.properties?.action_link
+      ?? `${process.env.NEXT_PUBLIC_APP_URL}/reset-password`
+  }
+
+  // ── Enviar email (opcional — no interrumpe el flujo si falla) ───
+  try {
+    if (isNewUser && resetLink) {
       await sendWelcomeEmail({ email, full_name, subjects: grantedSubjects, reset_link: resetLink })
-    } else {
+    } else if (!isNewUser) {
       await sendAccessGrantedEmail({ email, full_name, subjects: grantedSubjects })
     }
   } catch (emailErr) {
-    // El email falla sin interrumpir el flujo principal
     console.error('[webhook] Error enviando email:', emailErr)
   }
 
@@ -129,5 +135,6 @@ export async function POST(req: NextRequest) {
     is_new_user:      isNewUser,
     subjects_granted: grantedSubjects,
     password,
+    reset_link:       resetLink,
   })
 }
