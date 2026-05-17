@@ -1,0 +1,64 @@
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap');
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+:root {
+  --verde:         #0F3F26;
+  --verde-claro:   #1A6B3F;
+  --crema:         #F5F7E9;
+  --azul:          #1E3FB8;
+  --amarillo:      #F5D63E;
+  --rojo:          #C8332A;
+  --tinta:         #0A0A0A;
+}
+
+@theme inline {
+  --color-verde:        var(--verde);
+  --color-verde-claro:  var(--verde-claro);
+  --color-crema:        var(--crema);
+  --color-azul:         var(--azul);
+  --color-amarillo:     var(--amarillo);
+  --color-rojo:         var(--rojo);
+  --color-tinta:        var(--tinta);
+
+  --font-display: 'Syne', sans-serif;
+  --font-sans:    'DM Sans', sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--crema);
+  color: var(--tinta);
+  font-family: 'DM Sans', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3 {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.font-display {
+  font-weight: 800;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--verde); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--verde-claro); }
+
+/* Selection */
+::selection { background-color: var(--amarillo); color: var(--tinta); }
+
+/* Focus */
+:focus-visible {
+  outline: 2px solid var(--verde);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
