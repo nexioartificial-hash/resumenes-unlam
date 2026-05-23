@@ -17,10 +17,11 @@ function CheckoutContent() {
   const params   = useSearchParams()
   const router   = useRouter()
 
-  const email    = params.get('email')    ?? ''
-  const name     = params.get('name')     ?? ''
-  const slug     = params.get('subject')  ?? ''
-  const instagram = params.get('instagram') ?? ''
+  const email      = params.get('email')      ?? ''
+  const name       = params.get('name')       ?? ''
+  const slug       = params.get('subject')    ?? ''
+  const instagram  = params.get('instagram')  ?? ''
+  const contactId  = params.get('contact_id') ?? ''
 
   const [subject, setSubject] = useState<Subject | null>(null)
   const [loading, setLoading] = useState(true)
@@ -49,9 +50,10 @@ function CheckoutContent() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         email,
-        full_name:          name || email,
-        subject_slug:       slug,
-        instagram_username: instagram,
+        full_name:              name || email,
+        subject_slug:           slug,
+        instagram_username:     instagram,
+        sendpulse_contact_id:   contactId,
       }),
     })
 

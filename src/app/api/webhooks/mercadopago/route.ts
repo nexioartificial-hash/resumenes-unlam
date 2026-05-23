@@ -7,6 +7,7 @@ interface CheckoutMeta {
   full_name: string
   subject_slug: string
   instagram_username: string
+  sendpulse_contact_id?: string
 }
 
 export async function POST(req: NextRequest) {
@@ -62,7 +63,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: true })
   }
 
-  const { email, full_name, subject_slug, instagram_username } = meta
+  const { email, full_name, subject_slug, instagram_username, sendpulse_contact_id } = meta
   const supabase = createAdminClient()
 
   // Buscar o crear usuario (idempotente)
@@ -76,7 +77,11 @@ export async function POST(req: NextRequest) {
     userId    = existing.id
     isNewUser = false
     await supabase.from('profiles')
-      .update({ full_name, instagram_username: instagram_username || null })
+      .update({
+        full_name,
+        instagram_username:   instagram_username   || null,
+        sendpulse_contact_id: sendpulse_contact_id || null,
+      })
       .eq('id', userId)
   } else {
     const password = crypto.randomUUID().slice(0, 16)
@@ -91,7 +96,8 @@ export async function POST(req: NextRequest) {
     isNewUser = true
     await supabase.from('profiles').upsert({
       id: userId, full_name,
-      instagram_username: instagram_username || null,
+      instagram_username:    instagram_username    || null,
+      sendpulse_contact_id:  sendpulse_contact_id  || null,
       must_change_pass: false, is_admin: false,
     })
   }
@@ -112,7 +118,7 @@ export async function POST(req: NextRequest) {
   // Generar reset_link para nuevos usuarios
   let resetLink: string | null = null
   if (isNewUser) {
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://resumenesunlam.vercel.app'
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://resumenesunlam.site'
     const { data: linkData } = await supabase.auth.admin.generateLink({
       type: 'recovery', email,
       options: { redirectTo: `${appUrl}/change-password` },
@@ -131,26 +137,21 @@ export async function POST(req: NextRequest) {
     }
   } catch { /* no bloquea */ }
 
-  // Enviar DM de bienvenida via n8n (con contact_id guardado en profiles)
-  try {
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('sendpulse_contact_id')
-      .eq('id', userId)
-      .single()
-
-    if (profile?.sendpulse_contact_id && resetLink) {
+  // Enviar DM de bienvenida via n8n
+  const contactIdForDm = sendpulse_contact_id || null
+  if (contactIdForDm && isNewUser && resetLink) {
+    try {
       await fetch('https://n8n.nexioagency.online/webhook/bienvenida-mp', {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          contact_id: profile.sendpulse_contact_id,
+          contact_id: contactIdForDm,
           email,
           reset_link: resetLink,
         }),
       })
-    }
-  } catch { /* DM falla sin interrumpir */ }
+    } catch { /* DM falla sin interrumpir */ }
+  }
 
   console.log(`[webhook/mp] ✅ Acceso otorgado: ${email} → ${subject_slug}`)
   return NextResponse.json({ ok: true })

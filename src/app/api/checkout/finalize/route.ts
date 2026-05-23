@@ -58,7 +58,7 @@ async function grantAccess(meta: CheckoutMeta) {
   // Generar link de recuperación para nuevos usuarios
   let resetLink: string | null = null
   if (isNewUser) {
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://resumenesunlam.vercel.app'
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://resumenesunlam.site'
     const { data: linkData } = await supabase.auth.admin.generateLink({
       type: 'recovery', email,
       options: { redirectTo: `${appUrl}/change-password` },

@@ -3,10 +3,11 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 
 const schema = z.object({
-  email:              z.string().email(),
-  full_name:          z.string().min(1),
-  subject_slug:       z.string().min(1),
-  instagram_username: z.string().optional(),
+  email:                 z.string().email(),
+  full_name:             z.string().min(1),
+  subject_slug:          z.string().min(1),
+  instagram_username:    z.string().optional(),
+  sendpulse_contact_id:  z.string().optional(),
 })
 
 export async function POST(req: NextRequest) {
@@ -20,7 +21,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Datos inválidos', issues: parsed.error.issues }, { status: 400 })
   }
 
-  const { email, full_name, subject_slug, instagram_username } = parsed.data
+  const { email, full_name, subject_slug, instagram_username, sendpulse_contact_id } = parsed.data
 
   // Verificar que la materia existe y está disponible
   const supabase = createAdminClient()
@@ -41,10 +42,16 @@ export async function POST(req: NextRequest) {
   }
 
   // Codificar metadata en external_reference (base64 JSON)
-  const meta = { email, full_name, subject_slug, instagram_username: instagram_username ?? '' }
+  const meta = {
+    email,
+    full_name,
+    subject_slug,
+    instagram_username:   instagram_username   ?? '',
+    sendpulse_contact_id: sendpulse_contact_id ?? '',
+  }
   const external_reference = Buffer.from(JSON.stringify(meta)).toString('base64')
 
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://resumenesunlam.vercel.app'
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://resumenesunlam.site'
 
   // Crear preferencia en MercadoPago
   const mpRes = await fetch('https://api.mercadopago.com/checkout/preferences', {

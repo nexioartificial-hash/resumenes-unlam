@@ -1,37 +1,18 @@
 'use client'
 
-import { Suspense, useEffect, useState } from 'react'
+import { Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 
 function SuccessContent() {
-  const params             = useSearchParams()
-  const paymentId          = params.get('payment_id')
-  const externalReference  = params.get('external_reference') ?? ''
-  const status             = params.get('status')
+  const params            = useSearchParams()
+  const externalReference = params.get('external_reference') ?? ''
+  const status            = params.get('status')
 
-  const [resetLink, setResetLink] = useState<string | null>(null)
-  const [email,     setEmail]     = useState<string | null>(null)
-  const [loading,   setLoading]   = useState(true)
-
-  useEffect(() => {
-    if (status !== 'approved' || !paymentId) { setLoading(false); return }
-
-    fetch('/api/checkout/finalize', {
-      method:  'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ payment_id: paymentId, external_reference: externalReference }),
-    })
-      .then(r => r.json())
-      .then((data: { status?: string; reset_link?: string }) => {
-        if (data.reset_link) setResetLink(data.reset_link)
-        try {
-          const meta = JSON.parse(atob(externalReference)) as { email: string }
-          setEmail(meta.email)
-        } catch { /* ok */ }
-        setLoading(false)
-      })
-      .catch(() => setLoading(false))
-  }, [paymentId, externalReference, status])
+  let email: string | null = null
+  try {
+    const meta = JSON.parse(atob(externalReference)) as { email: string }
+    email = meta.email ?? null
+  } catch { /* ok */ }
 
   if (status === 'failure') {
     return (
@@ -57,24 +38,13 @@ function SuccessContent() {
     )
   }
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-fondo">
-        <div className="text-center">
-          <div className="w-10 h-10 border-4 border-verde border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-tinta/60 text-sm">Activando tu acceso...</p>
-        </div>
-      </div>
-    )
-  }
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-fondo px-4">
       <div className="bg-white rounded-2xl shadow-sm border border-tinta/10 p-8 max-w-md w-full text-center">
         <p className="text-5xl mb-4">🎉</p>
         <h1 className="text-2xl font-bold text-tinta mb-2">¡Pago confirmado!</h1>
         <p className="text-tinta/60 text-sm mb-6">
-          Tu acceso está activo. Ahora configurá tu contraseña para entrar a la plataforma.
+          Tu acceso se está activando. En unos instantes te llega un DM de Instagram con el link para configurar tu contraseña.
         </p>
 
         {email && (
@@ -84,23 +54,9 @@ function SuccessContent() {
           </div>
         )}
 
-        {resetLink ? (
-          <>
-            <a
-              href={resetLink}
-              className="block w-full bg-amarillo text-tinta font-bold py-4 rounded-xl hover:bg-amarillo/90 transition-colors text-center mb-4"
-            >
-              CONFIGURAR CONTRASEÑA
-            </a>
-            <p className="text-xs text-tinta/40">
-              También te mandamos este link por Instagram DM por si lo necesitás después.
-            </p>
-          </>
-        ) : (
-          <p className="text-sm text-tinta/60">
-            En unos instantes te llegará un DM de Instagram con el link para configurar tu contraseña.
-          </p>
-        )}
+        <p className="text-sm text-tinta/60">
+          Revisá tu Instagram DM de <span className="font-medium">@resumenes.unlam</span>.
+        </p>
       </div>
     </div>
   )
