@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import SubjectCard from '@/components/subjects/SubjectCard'
 import LockedSubjectCard from '@/components/subjects/LockedSubjectCard'
+import ComingSoonSubjectCard from '@/components/subjects/ComingSoonSubjectCard'
 
 interface Subject {
   id:          string
@@ -8,6 +9,7 @@ interface Subject {
   slug:        string
   color:       string
   order_index: number
+  available:   boolean
   has_access:  boolean
   expires_at:  string | null
 }
@@ -32,6 +34,7 @@ async function getSubjects(userId: string): Promise<Subject[]> {
 
   return (subjects ?? []).map(s => ({
     ...s,
+    available:  s.available ?? true,
     has_access: accessMap.has(s.id),
     expires_at: accessMap.get(s.id) ?? null,
   }))
@@ -63,8 +66,9 @@ export default async function DashboardPage() {
     getProgressMap(user!.id),
   ])
 
-  const mySubjects     = subjects.filter(s => s.has_access)
-  const lockedSubjects = subjects.filter(s => !s.has_access)
+  const mySubjects       = subjects.filter(s => s.has_access && s.available)
+  const comingSoon       = subjects.filter(s => !s.available)
+  const lockedSubjects   = subjects.filter(s => !s.has_access && s.available)
 
   return (
     <div>
@@ -95,6 +99,25 @@ export default async function DashboardPage() {
                 color={subject.color}
                 progress={progressMap.get(subject.id) ?? 0}
                 expires_at={subject.expires_at!}
+              />
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Próximamente */}
+      {comingSoon.length > 0 && (
+        <section className="mb-10">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-5 h-px bg-tinta/20" />
+            <h2 className="text-[10px] font-bold tracking-widest text-tinta/40">PRÓXIMAMENTE</h2>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            {comingSoon.map(subject => (
+              <ComingSoonSubjectCard
+                key={subject.id}
+                name={subject.name}
+                color={subject.color}
               />
             ))}
           </div>
