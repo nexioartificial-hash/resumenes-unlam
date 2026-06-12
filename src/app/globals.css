@@ -62,3 +62,43 @@ h1, h2, h3 {
   outline-offset: 2px;
   border-radius: 6px;
 }
+
+/* 3D Books showcase */
+@keyframes books-scroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+/* Login page animations */
+@keyframes float-card {
+  0%, 100% { transform: perspective(700px) rotateX(5deg) rotateY(-10deg) translateY(0px); }
+  50%      { transform: perspective(700px) rotateX(5deg) rotateY(-14deg) translateY(-10px); }
+}
+@keyframes float-badge {
+  0%, 100% { transform: translateY(0px)  rotate(-2deg); }
+  50%      { transform: translateY(-10px) rotate(-2deg); }
+}
+@keyframes float-badge-2 {
+  0%, 100% { transform: translateY(0px) rotate(1.5deg); }
+  50%      { transform: translateY(-12px) rotate(1.5deg); }
+}
+@keyframes float-badge-3 {
+  0%, 100% { transform: translateY(0px) rotate(-1deg); }
+  50%      { transform: translateY(-8px)  rotate(-1deg); }
+}
+@keyframes float-badge-4 {
+  0%, 100% { transform: translateY(0px) rotate(2.5deg); }
+  50%      { transform: translateY(-14px) rotate(2.5deg); }
+}
+@keyframes float-badge-5 {
+  0%, 100% { transform: translateY(0px) rotate(-1.5deg); }
+  50%      { transform: translateY(-9px) rotate(-1.5deg); }
+}
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes pulse-dot {
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50%      { opacity: 0.8; transform: scale(1.4); }
+}

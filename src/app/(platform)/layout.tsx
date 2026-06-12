@@ -21,7 +21,7 @@ export default async function PlatformLayout({
       <Sidebar />
       <div className="flex-1 flex flex-col min-w-0">
         <Header fullName={profile?.full_name} />
-        <main className="flex-1 p-6 overflow-auto">
+        <main className="flex-1 p-4 overflow-auto">
           {children}
         </main>
       </div>
