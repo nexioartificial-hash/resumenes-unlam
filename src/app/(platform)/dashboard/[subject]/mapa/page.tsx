@@ -23,8 +23,9 @@ export default function MapaPage() {
   const { subject: slug } = useParams<{ subject: string }>()
   const router = useRouter()
 
-  const [mastery, setMastery] = useState<Record<string, number>>({})
-  const [loading, setLoading] = useState(true)
+  const [mastery,  setMastery]  = useState<Record<string, number>>({})
+  const [loading,  setLoading]  = useState(true)
+  const [fetchErr, setFetchErr] = useState(false)
 
   const hasMap = SUBJECTS_WITH_MAP.includes(slug)
 
@@ -33,7 +34,7 @@ export default function MapaPage() {
     fetch(`/api/subjects/${slug}/mapa`)
       .then(r => r.json())
       .then(data => setMastery(data.mastery ?? {}))
-      .catch(() => {})
+      .catch(() => setFetchErr(true))
       .finally(() => setLoading(false))
   }, [slug, hasMap])
 
@@ -73,6 +74,17 @@ export default function MapaPage() {
         {loading ? (
           <div className="flex items-center justify-center h-full text-tinta/40 text-sm">
             Cargando...
+          </div>
+        ) : fetchErr ? (
+          <div className="flex flex-col items-center justify-center h-full gap-4 p-8">
+            <div className="text-4xl">⚠️</div>
+            <p className="text-tinta/40 text-sm">No se pudo cargar el mapa. Intentá de nuevo.</p>
+            <button
+              onClick={() => router.back()}
+              className="bg-tinta/10 text-tinta font-bold text-xs px-5 py-2.5 rounded-xl tracking-wider hover:bg-tinta/20 transition-colors"
+            >
+              ← VOLVER
+            </button>
           </div>
         ) : !hasMap ? (
           <div className="flex flex-col items-center justify-center h-full gap-4 p-8">

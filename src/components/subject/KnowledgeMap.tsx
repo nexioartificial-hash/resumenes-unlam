@@ -1,7 +1,7 @@
 // src/components/subject/KnowledgeMap.tsx
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import ReactFlow, {
   useNodesState,
@@ -225,6 +225,9 @@ export default function KnowledgeMap({ mastery, slug }: KnowledgeMapProps) {
   const [expandedModules, setExpandedModules] = useState<Set<string>>(new Set())
   const [selectedPanel,   setSelectedPanel]   = useState<PanelData | null>(null)
 
+  const masteryRef = useRef(mastery)
+  useEffect(() => { masteryRef.current = mastery }, [mastery])
+
   const buildNodes = useCallback(
     (expanded: Set<string>): Node[] => {
       const moduleNodes = FILOSOFIA_NODES.filter(n => n.type === 'module')
@@ -243,7 +246,7 @@ export default function KnowledgeMap({ mastery, slug }: KnowledgeMapProps) {
             data: {
               label:    fn.label,
               num:      moduleIdx + 1,
-              mastery:  mastery[fn.module_id ?? ''],
+              mastery:  masteryRef.current[fn.module_id ?? ''],
               expanded: expanded.has(fn.id),
               onToggle: () => {
                 setExpandedModules(prev => {
@@ -281,7 +284,7 @@ export default function KnowledgeMap({ mastery, slug }: KnowledgeMapProps) {
         }
       })
     },
-    [mastery]
+    []
   )
 
   const buildEdges = useCallback((expanded: Set<string>): Edge[] => {
