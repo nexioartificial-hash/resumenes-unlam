@@ -87,6 +87,12 @@ export default function SubjectContent({ subject, modules, content }: SubjectCon
             CARDS →
           </button>
           <button
+            onClick={() => router.push(`/dashboard/${slug}/mapa`)}
+            className="bg-tinta/10 text-tinta text-xs font-bold px-4 py-2 rounded-lg tracking-wider hover:bg-tinta/20 transition-colors shrink-0 border border-tinta/10"
+          >
+            MAPA →
+          </button>
+          <button
             onClick={() => router.push(`/dashboard/${slug}/ai`)}
             className="bg-verde text-crema text-xs font-bold px-4 py-2 rounded-lg tracking-wider hover:bg-verde-claro transition-colors shrink-0"
           >
