@@ -39,20 +39,24 @@ export async function GET(
       .eq('is_published', true)
       .limit(20)
     if (!qs) return NextResponse.json({ questions: [] })
-    return NextResponse.json({
-      questions: qs.map(q => {
-        const opts = q.options as { text: string; is_correct: boolean }[]
-        return {
-          id:            q.id,
-          question:      q.question,
-          options:       opts.map(o => o.text),
-          correct_index: opts.findIndex(o => o.is_correct),
-          explanation:   q.explanation,
-          failure_rate:  null,
-          times_seen:    0,
-        }
-      }),
+    const mapped = qs.map(q => {
+      const opts = q.options as { text: string; is_correct: boolean }[]
+      return {
+        id:            q.id,
+        question:      q.question,
+        options:       opts.map(o => o.text),
+        correct_index: opts.findIndex(o => o.is_correct),
+        explanation:   q.explanation,
+        failure_rate:  null,
+        times_seen:    0,
+      }
     })
+    // Fisher-Yates shuffle
+    for (let i = mapped.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [mapped[i], mapped[j]] = [mapped[j], mapped[i]]
+    }
+    return NextResponse.json({ questions: mapped })
   }
 
   // Agregar estadísticas por pregunta
