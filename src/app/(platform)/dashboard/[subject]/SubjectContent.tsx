@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import ContentViewer from '@/components/content/ContentViewer'
 import ProgressBar from '@/components/shared/ProgressBar'
+import PredictorPanel from '@/components/subject/PredictorPanel'
 
 interface Module {
   id:          string
@@ -36,7 +37,7 @@ interface SubjectContentProps {
   content: ContentItem[]
 }
 
-type Tab = 'modulos' | 'material'
+type Tab = 'modulos' | 'material' | 'predictor'
 
 export default function SubjectContent({ subject, modules, content }: SubjectContentProps) {
   const router = useRouter()
@@ -118,6 +119,16 @@ export default function SubjectContent({ subject, modules, content }: SubjectCon
             📄 MATERIAL DE APOYO
           </button>
         )}
+        <button
+          onClick={() => setTab('predictor')}
+          className={`text-xs font-bold px-4 py-2 rounded-lg tracking-wider transition-colors ${
+            tab === 'predictor'
+              ? 'bg-verde text-crema'
+              : 'bg-white text-tinta/50 hover:bg-tinta/5 border border-tinta/10'
+          }`}
+        >
+          📊 PREDICTOR
+        </button>
       </div>
 
       {/* Módulos */}
@@ -195,6 +206,13 @@ export default function SubjectContent({ subject, modules, content }: SubjectCon
               </div>
             )}
           </div>
+        </div>
+      )}
+
+      {/* Predictor de nota */}
+      {tab === 'predictor' && (
+        <div className="flex-1">
+          <PredictorPanel slug={slug} />
         </div>
       )}
     </div>
