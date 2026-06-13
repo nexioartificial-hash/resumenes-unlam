@@ -35,10 +35,22 @@ export async function POST(
   if (!body.question_id || body.quality === undefined) {
     return NextResponse.json({ error: 'question_id y quality son requeridos' }, { status: 400 })
   }
+  if (!(([0, 3, 5] as number[]).includes(body.quality))) {
+    return NextResponse.json({ error: 'quality debe ser 0, 3 o 5' }, { status: 400 })
+  }
 
   const { data: subject } = await supabase
     .from('subjects').select('id').eq('slug', slug).single()
   if (!subject) return NextResponse.json({ error: 'Materia no encontrada' }, { status: 404 })
+
+  const { data: access } = await supabase
+    .from('user_subjects')
+    .select('id')
+    .eq('user_id', user.id)
+    .eq('subject_id', subject.id)
+    .gt('expires_at', new Date().toISOString())
+    .single()
+  if (!access) return NextResponse.json({ error: 'Sin acceso' }, { status: 403 })
 
   const { data: existing } = await supabase
     .from('flashcard_reviews')

@@ -44,11 +44,12 @@ export default function FlashcardsPage() {
     if (quality >= 3) setSessionKnown(k => k + 1)
     else               setSessionMissed(k => k + 1)
 
-    await fetch(`/api/subjects/${slug}/flashcards/review`, {
+    const res = await fetch(`/api/subjects/${slug}/flashcards/review`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ question_id: currentCard.question_id, quality }),
     })
+    if (!res.ok) return
 
     const next = index + 1
     if (next >= cards.length) {
