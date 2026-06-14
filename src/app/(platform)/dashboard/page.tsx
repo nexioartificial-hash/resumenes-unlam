@@ -152,16 +152,8 @@ export default async function DashboardPage() {
             TODAVÍA NO TENÉS MATERIAS
           </h2>
           <p className="text-tinta/50 text-sm mb-6">
-            Escribinos por Instagram para comprar tu material de ingreso
+            Comprá tu acceso directamente desde la plataforma
           </p>
-          <a
-            href="https://instagram.com/resumenes.unlam"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-block bg-amarillo text-tinta font-bold px-6 py-3 rounded-xl tracking-wider hover:bg-amarillo/90 transition-colors"
-          >
-            IR A INSTAGRAM
-          </a>
         </div>
       )}
     </div>

@@ -110,7 +110,7 @@ function CheckoutContent() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-fondo">
         <div className="bg-white rounded-2xl shadow-sm border border-tinta/10 p-8 max-w-md w-full text-center">
-          <p className="text-tinta/60">Link de pago inválido. Pedile uno nuevo a Resúmenes UNLaM por Instagram.</p>
+          <p className="text-tinta/60">Acceso no válido. Ingresá al dashboard y hacé click en "Comprar acceso" en la materia que querés.</p>
         </div>
       </div>
     )
@@ -122,7 +122,7 @@ function CheckoutContent() {
         <div className="bg-white rounded-2xl shadow-sm border border-tinta/10 p-8 max-w-md w-full text-center">
           <p className="text-2xl mb-2">😔</p>
           <p className="font-bold text-tinta">{subject.name} no está disponible por el momento.</p>
-          <p className="text-tinta/60 text-sm mt-2">Escribinos por Instagram para más info.</p>
+          <p className="text-tinta/60 text-sm mt-2">Próximamente disponible.</p>
         </div>
       </div>
     )

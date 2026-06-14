@@ -505,12 +505,24 @@ function LoginForm() {
             </div>
 
             {/* Registro */}
-            <p className="mt-3 text-center text-[12px] text-tinta/35">
-              ¿No tenés cuenta?{' '}
-              <Link href="/register" className="text-verde font-semibold hover:underline underline-offset-2">
-                Registrate
+            <div className="mt-5 border-t border-tinta/8 pt-5 text-center">
+              <p className="text-[12px] text-tinta/50 mb-2">¿Es tu primera vez?</p>
+              <Link
+                href="/register"
+                className="inline-block w-full font-bold py-3 rounded-xl text-sm tracking-wider transition-all duration-200 border-2"
+                style={{ borderColor: 'var(--verde)', color: 'var(--verde)' }}
+                onMouseEnter={e => {
+                  (e.currentTarget as HTMLAnchorElement).style.backgroundColor = 'var(--verde)'
+                  ;(e.currentTarget as HTMLAnchorElement).style.color = 'var(--crema)'
+                }}
+                onMouseLeave={e => {
+                  (e.currentTarget as HTMLAnchorElement).style.backgroundColor = 'transparent'
+                  ;(e.currentTarget as HTMLAnchorElement).style.color = 'var(--verde)'
+                }}
+              >
+                CREAR CUENTA →
               </Link>
-            </p>
+            </div>
 
           </div>
         </div>

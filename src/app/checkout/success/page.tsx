@@ -2,6 +2,7 @@
 
 import { Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
+import Link from 'next/link'
 
 function SuccessContent() {
   const params            = useSearchParams()
@@ -20,7 +21,13 @@ function SuccessContent() {
         <div className="bg-white rounded-2xl shadow-sm border border-tinta/10 p-8 max-w-md w-full text-center">
           <p className="text-4xl mb-4">😕</p>
           <h1 className="text-xl font-bold text-tinta mb-2">El pago no se procesó</h1>
-          <p className="text-tinta/60 text-sm">Podés intentarlo de nuevo o escribirnos por Instagram.</p>
+          <p className="text-tinta/60 text-sm mb-6">Podés intentarlo de nuevo desde el dashboard.</p>
+          <Link
+            href="/dashboard"
+            className="block w-full bg-verde text-crema font-bold py-3 rounded-xl hover:bg-verde-claro transition-colors text-sm tracking-wider"
+          >
+            IR AL DASHBOARD
+          </Link>
         </div>
       </div>
     )
@@ -32,7 +39,15 @@ function SuccessContent() {
         <div className="bg-white rounded-2xl shadow-sm border border-tinta/10 p-8 max-w-md w-full text-center">
           <p className="text-4xl mb-4">⏳</p>
           <h1 className="text-xl font-bold text-tinta mb-2">Pago pendiente</h1>
-          <p className="text-tinta/60 text-sm">Cuando se confirme el pago te avisamos por Instagram DM con tus accesos.</p>
+          <p className="text-tinta/60 text-sm mb-6">
+            Cuando se confirme el pago te llegará un email a <strong>{email ?? 'tu casilla'}</strong> y tu acceso se activará automáticamente.
+          </p>
+          <Link
+            href="/dashboard"
+            className="block w-full bg-verde text-crema font-bold py-3 rounded-xl hover:bg-verde-claro transition-colors text-sm tracking-wider"
+          >
+            IR AL DASHBOARD
+          </Link>
         </div>
       </div>
     )
@@ -44,19 +59,22 @@ function SuccessContent() {
         <p className="text-5xl mb-4">🎉</p>
         <h1 className="text-2xl font-bold text-tinta mb-2">¡Pago confirmado!</h1>
         <p className="text-tinta/60 text-sm mb-6">
-          Tu acceso se está activando. En unos instantes te llega un DM de Instagram con el link para configurar tu contraseña.
+          Tu acceso se está activando. En unos segundos la materia aparece habilitada en tu dashboard.
         </p>
 
         {email && (
           <div className="bg-fondo rounded-xl px-4 py-3 mb-6 text-left">
-            <p className="text-xs text-tinta/50 mb-0.5">Tu email de acceso</p>
+            <p className="text-xs text-tinta/50 mb-0.5">Acceso habilitado para</p>
             <p className="text-sm font-medium text-tinta">{email}</p>
           </div>
         )}
 
-        <p className="text-sm text-tinta/60">
-          Revisá tu Instagram DM de <span className="font-medium">@resumenes.unlam</span>.
-        </p>
+        <Link
+          href="/dashboard"
+          className="block w-full bg-verde text-crema font-bold py-3 rounded-xl hover:bg-verde-claro transition-colors text-sm tracking-wider"
+        >
+          IR A MIS MATERIAS →
+        </Link>
       </div>
     </div>
   )
