@@ -6,7 +6,6 @@ interface CheckoutMeta {
   email: string
   full_name: string
   subject_slug: string
-  instagram_username: string
   sendpulse_contact_id?: string
 }
 
@@ -63,26 +62,26 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: true })
   }
 
-  const { email, full_name, subject_slug, instagram_username, sendpulse_contact_id } = meta
+  const { email, full_name, subject_slug, sendpulse_contact_id } = meta
   const supabase = createAdminClient()
 
   // Buscar o crear usuario (idempotente)
   let userId: string
   let isNewUser: boolean
 
-  const { data: existingUsers } = await supabase.auth.admin.listUsers()
-  const existing = existingUsers?.users?.find(u => u.email === email)
+  const { data: existingId } = await supabase.rpc('get_user_id_by_email', { user_email: email })
 
-  if (existing) {
-    userId    = existing.id
+  if (existingId) {
+    userId    = existingId as string
     isNewUser = false
     await supabase.from('profiles')
-      .update({
+      .upsert({
+        id: userId,
         full_name,
-        instagram_username:   instagram_username   || null,
         sendpulse_contact_id: sendpulse_contact_id || null,
-      })
-      .eq('id', userId)
+        must_change_pass: false,
+        is_admin: false,
+      }, { onConflict: 'id' })
   } else {
     const password = crypto.randomUUID().slice(0, 16)
     const { data: newUser, error } = await supabase.auth.admin.createUser({
@@ -96,8 +95,7 @@ export async function POST(req: NextRequest) {
     isNewUser = true
     await supabase.from('profiles').upsert({
       id: userId, full_name,
-      instagram_username:    instagram_username    || null,
-      sendpulse_contact_id:  sendpulse_contact_id  || null,
+      sendpulse_contact_id: sendpulse_contact_id || null,
       must_change_pass: false, is_admin: false,
     })
   }
@@ -140,15 +138,17 @@ export async function POST(req: NextRequest) {
   // Enviar DM de bienvenida via n8n
   const contactIdForDm = sendpulse_contact_id || null
   if (contactIdForDm && isNewUser && resetLink) {
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://resumenesunlam.site'
+    const dmMessage =
+      `¡Bienvenido/a a Resúmenes UNLaM!\n\n` +
+      `Configurá tu contraseña y accedé a la plataforma:\n${resetLink}\n\n` +
+      `Tu email de acceso: ${email}\n` +
+      `Web: ${appUrl}`
     try {
       await fetch('https://n8n.nexioagency.online/webhook/bienvenida-mp', {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contact_id: contactIdForDm,
-          email,
-          reset_link: resetLink,
-        }),
+        body: JSON.stringify({ contact_id: contactIdForDm, message: dmMessage }),
       })
     } catch { /* DM falla sin interrumpir */ }
   }
