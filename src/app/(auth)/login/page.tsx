@@ -494,33 +494,20 @@ function LoginForm() {
               </button>
             </p>
 
-            {/* Olvidé contraseña */}
-            <div className="mt-4 text-center">
+            {/* Links inferiores */}
+            <div className="mt-4 flex items-center justify-between">
               <Link
                 href="/reset-password"
                 className="text-[12px] text-tinta/35 hover:text-verde transition-colors"
               >
                 Olvidé mi contraseña
               </Link>
-            </div>
-
-            {/* Registro */}
-            <div className="mt-5 border-t border-tinta/8 pt-5 text-center">
-              <p className="text-[12px] text-tinta/50 mb-2">¿Es tu primera vez?</p>
               <Link
                 href="/register"
-                className="inline-block w-full font-bold py-3 rounded-xl text-sm tracking-wider transition-all duration-200 border-2"
-                style={{ borderColor: 'var(--verde)', color: 'var(--verde)' }}
-                onMouseEnter={e => {
-                  (e.currentTarget as HTMLAnchorElement).style.backgroundColor = 'var(--verde)'
-                  ;(e.currentTarget as HTMLAnchorElement).style.color = 'var(--crema)'
-                }}
-                onMouseLeave={e => {
-                  (e.currentTarget as HTMLAnchorElement).style.backgroundColor = 'transparent'
-                  ;(e.currentTarget as HTMLAnchorElement).style.color = 'var(--verde)'
-                }}
+                className="text-[12px] font-bold hover:underline underline-offset-2 transition-colors"
+                style={{ color: 'var(--verde)' }}
               >
-                CREAR CUENTA →
+                Crear cuenta →
               </Link>
             </div>
 
