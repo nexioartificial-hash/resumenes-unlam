@@ -129,51 +129,87 @@ function CheckoutContent() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-fondo px-4">
-      <div className="bg-white rounded-2xl shadow-sm border border-tinta/10 p-8 max-w-md w-full">
+    <div className="min-h-screen relative overflow-hidden flex items-center justify-center px-4 py-12"
+      style={{ background: 'radial-gradient(ellipse at 30% 0%, #1b6040 0%, #0a2918 50%, #040c07 100%)' }}>
+
+      {/* Formas decorativas de fondo */}
+      <div style={{ position:'absolute', top:'-15%', right:'-5%', width:'480px', height:'480px', borderRadius:'50%', background:'rgba(245,214,62,0.07)', filter:'blur(90px)', pointerEvents:'none' }} />
+      <div style={{ position:'absolute', bottom:'-20%', left:'-10%', width:'420px', height:'420px', borderRadius:'50%', background:'rgba(15,63,38,0.5)', filter:'blur(70px)', pointerEvents:'none' }} />
+      <div style={{ position:'absolute', top:'40%', left:'55%', width:'200px', height:'200px', borderRadius:'50%', background:'rgba(0,158,227,0.06)', filter:'blur(60px)', pointerEvents:'none' }} />
+
+      {/* Card glassmorphism */}
+      <div className="relative z-10 w-full max-w-sm" style={{
+        background: 'rgba(255,255,255,0.06)',
+        backdropFilter: 'blur(28px)',
+        WebkitBackdropFilter: 'blur(28px)',
+        border: '1px solid rgba(255,255,255,0.11)',
+        borderRadius: '28px',
+        boxShadow: '0 40px 80px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.12)',
+        overflow: 'hidden',
+      }}>
 
         {/* Header */}
-        <div className="text-center mb-6">
-          <p className="text-sm text-tinta/50 font-medium uppercase tracking-wide">Resúmenes UNLaM</p>
-          <h1 className="text-2xl font-bold text-tinta mt-1">{subject.name}</h1>
-          <p className="text-tinta/60 text-sm mt-1">{subject.department}</p>
+        <div style={{ padding:'36px 36px 28px', borderBottom:'1px solid rgba(255,255,255,0.07)' }}>
+          <p style={{ color:'rgba(255,255,255,0.35)', fontSize:'10px', fontWeight:'700', letterSpacing:'0.28em', textTransform:'uppercase', marginBottom:'14px' }}>
+            Resúmenes UNLaM
+          </p>
+          <h1 style={{ color:'#fff', fontSize:'2.4rem', fontWeight:'900', lineHeight:'1', letterSpacing:'-0.01em', marginBottom:'6px' }}>
+            {subject.name}
+          </h1>
+          <p style={{ color:'rgba(255,255,255,0.4)', fontSize:'13px' }}>{subject.department}</p>
+          <div style={{ marginTop:'20px', width:'36px', height:'3px', background:'#F5D63E', borderRadius:'2px' }} />
         </div>
 
-        {/* Info */}
-        <div className="bg-fondo rounded-xl p-4 mb-6 space-y-3">
+        {/* Descripción */}
+        <div style={{ padding:'22px 36px', borderBottom:'1px solid rgba(255,255,255,0.07)' }}>
           {subject.description && (
-            <p className="text-sm text-tinta">{subject.description}</p>
+            <p style={{ color:'rgba(255,255,255,0.65)', fontSize:'14px', lineHeight:'1.65', marginBottom: subject.benefit ? '10px' : '0' }}>
+              {subject.description}
+            </p>
           )}
           {subject.benefit && (
-            <p className="text-sm text-verde font-medium">✓ {subject.benefit}</p>
+            <p style={{ color:'#F5D63E', fontSize:'13px', fontWeight:'600' }}>✓ {subject.benefit}</p>
           )}
         </div>
 
         {/* Precio */}
-        <div className="flex items-center justify-between mb-6 px-1">
-          <span className="text-tinta/60 text-sm">Precio</span>
-          <span className="text-2xl font-bold text-tinta">${subject.price.toLocaleString('es-AR')}</span>
+        <div style={{ padding:'20px 36px', borderBottom:'1px solid rgba(255,255,255,0.07)', display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+          <span style={{ color:'rgba(255,255,255,0.35)', fontSize:'12px', fontWeight:'600', letterSpacing:'0.1em', textTransform:'uppercase' }}>Precio</span>
+          <span style={{ color:'#fff', fontSize:'2rem', fontWeight:'900', letterSpacing:'-0.02em' }}>
+            ${subject.price.toLocaleString('es-AR')}
+          </span>
         </div>
 
-        {/* Email del comprador */}
-        <div className="bg-tinta/5 rounded-xl px-4 py-3 mb-6">
-          <p className="text-xs text-tinta/50 mb-0.5">Acceso para</p>
-          <p className="text-sm font-medium text-tinta">{email}</p>
+        {/* Email */}
+        <div style={{ padding:'16px 36px', borderBottom:'1px solid rgba(255,255,255,0.07)', background:'rgba(255,255,255,0.03)' }}>
+          <p style={{ color:'rgba(255,255,255,0.3)', fontSize:'10px', fontWeight:'600', letterSpacing:'0.15em', textTransform:'uppercase', marginBottom:'4px' }}>Acceso para</p>
+          <p style={{ color:'rgba(255,255,255,0.8)', fontSize:'14px', fontWeight:'500' }}>{email}</p>
         </div>
 
-        {error && <p className="text-red-500 text-sm mb-4 text-center">{error}</p>}
-
-        <button
-          onClick={handlePagar}
-          disabled={paying}
-          className="w-full bg-[#009EE3] hover:bg-[#0081BE] text-white font-bold py-4 rounded-xl transition-colors disabled:opacity-50 text-lg"
-        >
-          {paying ? 'Redirigiendo...' : 'Pagar con MercadoPago'}
-        </button>
-
-        <p className="text-center text-xs text-tinta/40 mt-4">
-          Pago 100% seguro procesado por MercadoPago
-        </p>
+        {/* CTA */}
+        <div style={{ padding:'28px 36px' }}>
+          {error && (
+            <p style={{ color:'#ff6b6b', fontSize:'13px', marginBottom:'14px', textAlign:'center' }}>{error}</p>
+          )}
+          <button
+            onClick={handlePagar}
+            disabled={paying}
+            style={{
+              width:'100%', background:'#009EE3', color:'#fff', fontWeight:'700',
+              fontSize:'15px', padding:'16px', borderRadius:'14px', border:'none',
+              cursor: paying ? 'not-allowed' : 'pointer', opacity: paying ? 0.55 : 1,
+              transition:'all 0.2s', letterSpacing:'0.02em',
+              boxShadow: paying ? 'none' : '0 8px 24px rgba(0,158,227,0.35)',
+            }}
+            onMouseEnter={e => { if (!paying) (e.currentTarget as HTMLButtonElement).style.background = '#0081BE' }}
+            onMouseLeave={e => { if (!paying) (e.currentTarget as HTMLButtonElement).style.background = '#009EE3' }}
+          >
+            {paying ? 'Redirigiendo...' : 'Pagar con MercadoPago'}
+          </button>
+          <p style={{ color:'rgba(255,255,255,0.2)', fontSize:'11px', textAlign:'center', marginTop:'14px' }}>
+            Pago 100% seguro procesado por MercadoPago
+          </p>
+        </div>
       </div>
     </div>
   )
