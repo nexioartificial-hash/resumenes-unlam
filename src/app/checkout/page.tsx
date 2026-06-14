@@ -138,7 +138,7 @@ function CheckoutContent() {
       <div style={{ position:'absolute', top:'40%', left:'55%', width:'200px', height:'200px', borderRadius:'50%', background:'rgba(0,158,227,0.06)', filter:'blur(60px)', pointerEvents:'none' }} />
 
       {/* Card glassmorphism */}
-      <div className="relative z-10 w-full max-w-sm" style={{
+      <div className="relative z-10 w-full max-w-lg" style={{
         background: 'rgba(255,255,255,0.06)',
         backdropFilter: 'blur(28px)',
         WebkitBackdropFilter: 'blur(28px)',
@@ -172,18 +172,18 @@ function CheckoutContent() {
           )}
         </div>
 
-        {/* Precio */}
-        <div style={{ padding:'20px 36px', borderBottom:'1px solid rgba(255,255,255,0.07)', display:'flex', alignItems:'center', justifyContent:'space-between' }}>
-          <span style={{ color:'rgba(255,255,255,0.35)', fontSize:'12px', fontWeight:'600', letterSpacing:'0.1em', textTransform:'uppercase' }}>Precio</span>
-          <span style={{ color:'#fff', fontSize:'2rem', fontWeight:'900', letterSpacing:'-0.02em' }}>
-            ${subject.price.toLocaleString('es-AR')}
-          </span>
-        </div>
-
-        {/* Email */}
-        <div style={{ padding:'16px 36px', borderBottom:'1px solid rgba(255,255,255,0.07)', background:'rgba(255,255,255,0.03)' }}>
-          <p style={{ color:'rgba(255,255,255,0.3)', fontSize:'10px', fontWeight:'600', letterSpacing:'0.15em', textTransform:'uppercase', marginBottom:'4px' }}>Acceso para</p>
-          <p style={{ color:'rgba(255,255,255,0.8)', fontSize:'14px', fontWeight:'500' }}>{email}</p>
+        {/* Precio + Email en fila */}
+        <div style={{ padding:'20px 36px', borderBottom:'1px solid rgba(255,255,255,0.07)', display:'flex', alignItems:'center', justifyContent:'space-between', gap:'16px' }}>
+          <div>
+            <p style={{ color:'rgba(255,255,255,0.3)', fontSize:'10px', fontWeight:'600', letterSpacing:'0.15em', textTransform:'uppercase', marginBottom:'4px' }}>Acceso para</p>
+            <p style={{ color:'rgba(255,255,255,0.8)', fontSize:'14px', fontWeight:'500' }}>{email}</p>
+          </div>
+          <div style={{ textAlign:'right', flexShrink:0 }}>
+            <p style={{ color:'rgba(255,255,255,0.35)', fontSize:'10px', fontWeight:'600', letterSpacing:'0.1em', textTransform:'uppercase', marginBottom:'4px' }}>Precio</p>
+            <span style={{ color:'#fff', fontSize:'2rem', fontWeight:'900', letterSpacing:'-0.02em' }}>
+              ${subject.price.toLocaleString('es-AR')}
+            </span>
+          </div>
         </div>
 
         {/* CTA */}
