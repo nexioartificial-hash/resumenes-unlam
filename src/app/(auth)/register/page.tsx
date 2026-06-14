@@ -98,8 +98,11 @@ function RegisterForm() {
         <div className="w-full max-w-sm text-center px-8">
           <p className="text-4xl mb-4">📬</p>
           <h2 className="font-display text-verde text-2xl mb-3">REVISÁ TU EMAIL</h2>
-          <p className="text-tinta/60 text-sm leading-relaxed mb-6">
+          <p className="text-tinta/60 text-sm leading-relaxed mb-3">
             Te enviamos un link de confirmación a <strong>{email}</strong>. Hacé click en el link para activar tu cuenta.
+          </p>
+          <p className="text-tinta/40 text-xs leading-relaxed mb-6 bg-tinta/5 rounded-xl px-4 py-3">
+            ¿No lo ves? Revisá la carpeta de <strong>spam</strong> o <strong>promociones</strong> — a veces llega ahí.
           </p>
           <Link href="/login" className="text-[12px] text-tinta/40 hover:text-verde transition-colors">
             Volver al inicio de sesión

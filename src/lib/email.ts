@@ -4,7 +4,7 @@ const resend = process.env.RESEND_API_KEY
   ? new Resend(process.env.RESEND_API_KEY)
   : null
 
-const FROM    = 'Resúmenes UNLaM <noreply@resumenesunlam.site>'
+const FROM    = 'Resúmenes UNLaM <hola@resumenesunlam.site>'
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
 
 function brandedHtml(title: string, body: string): string {
