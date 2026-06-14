@@ -128,14 +128,100 @@ function CheckoutContent() {
     )
   }
 
+  const chips = subject.description
+    ? subject.description.split('·').map(f => f.replace('.', '').trim()).filter(Boolean)
+    : []
+
+  function chipIcon(text: string) {
+    const t = text.toLowerCase()
+    if (t.includes('módulo'))                     return '📚'
+    if (t.includes('guía'))                       return '📖'
+    if (t.includes('modelo') || (t.includes('examen') && !t.includes('predictor'))) return '📝'
+    if (t.includes('quiz') || t.includes('pregunta')) return '❓'
+    if (t.includes('flashcard'))                  return '🃏'
+    if (t.includes('mapa'))                       return '🗺️'
+    if (t.includes('ia') || t.includes('chat'))   return '✨'
+    if (t.includes('predictor'))                  return '🎯'
+    if (t.includes('línea') || t.includes('tiempo')) return '⏱️'
+    return '⭐'
+  }
+
+  const chipPositions = [
+    { top: '6%',    left:  '3%'  },
+    { top: '4%',    right: '4%'  },
+    { top: '30%',   left:  '1%'  },
+    { top: '28%',   right: '1%'  },
+    { top: '56%',   left:  '2%'  },
+    { top: '54%',   right: '2%'  },
+    { bottom: '12%',left:  '5%'  },
+    { bottom: '10%',right: '5%'  },
+    { top: '14%',   left:  '28%' },
+  ]
+
   return (
     <div className="min-h-screen relative overflow-hidden flex items-center justify-center px-4 py-12"
       style={{ background: 'radial-gradient(ellipse at 30% 0%, #1b6040 0%, #0a2918 50%, #040c07 100%)' }}>
+
+      <style>{`
+        @keyframes float-chip {
+          0%, 100% { transform: translateY(0px) rotate(0deg); }
+          33%       { transform: translateY(-10px) rotate(0.8deg); }
+          66%       { transform: translateY(-5px) rotate(-0.5deg); }
+        }
+      `}</style>
 
       {/* Formas decorativas de fondo */}
       <div style={{ position:'absolute', top:'-15%', right:'-5%', width:'480px', height:'480px', borderRadius:'50%', background:'rgba(245,214,62,0.07)', filter:'blur(90px)', pointerEvents:'none' }} />
       <div style={{ position:'absolute', bottom:'-20%', left:'-10%', width:'420px', height:'420px', borderRadius:'50%', background:'rgba(15,63,38,0.5)', filter:'blur(70px)', pointerEvents:'none' }} />
       <div style={{ position:'absolute', top:'40%', left:'55%', width:'200px', height:'200px', borderRadius:'50%', background:'rgba(0,158,227,0.06)', filter:'blur(60px)', pointerEvents:'none' }} />
+
+      {/* Chips flotantes — solo desktop */}
+      <div className="hidden lg:block">
+        {chips.slice(0, chipPositions.length).map((chip, i) => {
+          const depth = i % 3
+          const opacity  = depth === 0 ? 0.75 : depth === 1 ? 0.55 : 0.38
+          const blur     = depth === 0 ? 'blur(0px)' : depth === 1 ? 'blur(0.5px)' : 'blur(1px)'
+          const scale    = depth === 0 ? 1 : depth === 1 ? 0.95 : 0.88
+          const duration = 5.5 + i * 0.7
+          const delay    = i * 0.65
+          return (
+            <div
+              key={i}
+              style={{
+                position: 'absolute',
+                ...chipPositions[i],
+                animation: `float-chip ${duration}s ease-in-out infinite ${delay}s`,
+                zIndex: 1,
+                pointerEvents: 'none',
+                transform: `scale(${scale})`,
+                opacity,
+                filter: blur,
+              }}
+            >
+              <div style={{
+                background: 'rgba(255,255,255,0.07)',
+                backdropFilter: 'blur(12px)',
+                WebkitBackdropFilter: 'blur(12px)',
+                border: '1px solid rgba(255,255,255,0.13)',
+                borderRadius: '14px',
+                padding: '10px 18px',
+                color: 'rgba(255,255,255,0.85)',
+                fontSize: '12px',
+                fontWeight: '600',
+                whiteSpace: 'nowrap',
+                boxShadow: '0 4px 20px rgba(0,0,0,0.25)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                letterSpacing: '0.01em',
+              }}>
+                <span style={{ fontSize: '14px' }}>{chipIcon(chip)}</span>
+                <span style={{ textTransform: 'capitalize' }}>{chip}</span>
+              </div>
+            </div>
+          )
+        })}
+      </div>
 
       {/* Card glassmorphism */}
       <div className="relative z-10 w-full max-w-lg" style={{
