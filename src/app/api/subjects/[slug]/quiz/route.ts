@@ -7,7 +7,7 @@ export async function GET(
 ) {
   const { slug } = await params
   const { searchParams } = new URL(req.url)
-  const limit = Math.min(parseInt(searchParams.get('limit') ?? '10'), 20)
+  const limit = Math.min(parseInt(searchParams.get('limit') ?? '10'), 60)
 
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
+import FeatureIntro from '@/components/ui/FeatureIntro'
 
 type DueCard = {
   review_id:     string
@@ -39,18 +40,12 @@ export default function FlashcardsPage() {
 
   const currentCard = cards[index]
 
-  async function handleQuality(quality: 0 | 3 | 5) {
+  function handleQuality(quality: 0 | 3 | 5) {
     if (!currentCard) return
     if (quality >= 3) setSessionKnown(k => k + 1)
     else               setSessionMissed(k => k + 1)
 
-    const res = await fetch(`/api/subjects/${slug}/flashcards/review`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ question_id: currentCard.question_id, quality }),
-    })
-    if (!res.ok) return
-
+    // Avanzar inmediatamente sin esperar al servidor
     const next = index + 1
     if (next >= cards.length) {
       setScreen('done')
@@ -58,6 +53,13 @@ export default function FlashcardsPage() {
       setIndex(next)
       setIsFlipped(false)
     }
+
+    // Guardar en background (fire-and-forget)
+    fetch(`/api/subjects/${slug}/flashcards/review`, {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ question_id: currentCard.question_id, quality }),
+    }).catch(() => {})
   }
 
   if (screen === 'loading') {
@@ -88,7 +90,7 @@ export default function FlashcardsPage() {
             onClick={() => setScreen('card')}
             className="bg-verde text-crema font-bold text-sm px-6 py-3 rounded-xl tracking-wider hover:bg-verde/90 transition-colors"
           >
-            INICIAR SESIÓN →
+            EMPEZAR →
           </button>
           <button
             onClick={() => router.back()}
@@ -171,6 +173,19 @@ export default function FlashcardsPage() {
 
   return (
     <div className="min-h-screen bg-crema flex flex-col p-4 gap-4">
+      <FeatureIntro
+        featureKey="flashcards"
+        icon="🃏"
+        title="Flashcards con repetición espaciada"
+        description="Las flashcards te muestran preguntas del examen y vos decidís si las sabías o no. El sistema las programa para que repases justo antes de que las olvides."
+        steps={[
+          { icon: '👁️', text: 'Leé la pregunta e intentá responderla mentalmente.' },
+          { icon: '✅', text: 'Destapá la respuesta y marcá si la sabías o no.' },
+          { icon: '📅', text: 'El sistema elige cuándo mostrarte cada tarjeta de nuevo.' },
+          { icon: '🔁', text: 'Volvé todos los días — cuanto más usás, mejor funciona.' },
+        ]}
+        ctaLabel="Empezar"
+      />
       <div className="flex items-center gap-3 max-w-lg mx-auto w-full">
         <button
           onClick={() => router.back()}

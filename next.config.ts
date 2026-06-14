@@ -1,7 +1,26 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  transpilePackages: [
+    'react-markdown',
+    'remark-gfm',
+    'remark-parse',
+    'remark-rehype',
+    'rehype-react',
+    'rehype-stringify',
+    'unified',
+    'bail',
+    'is-plain-obj',
+    'trough',
+    'vfile',
+    'vfile-message',
+    'unist-util-stringify-position',
+    'mdast-util-from-markdown',
+    'mdast-util-to-hast',
+    'micromark',
+    'decode-named-character-reference',
+    'character-entities',
+  ],
 };
 
 export default nextConfig;

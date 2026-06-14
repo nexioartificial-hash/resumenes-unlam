@@ -43,7 +43,7 @@ export default function SubjectCard({
           </p>
           <Link
             href={`/dashboard/${slug}`}
-            className="text-crema text-xs font-bold px-4 py-2 rounded-lg tracking-wider transition-opacity hover:opacity-80"
+            className="text-crema text-xs font-bold px-4 py-2 rounded-xl tracking-wider transition-opacity hover:opacity-80"
             style={{ backgroundColor: color }}
           >
             ENTRAR →

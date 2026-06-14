@@ -24,7 +24,7 @@ export default function ComingSoonSubjectCard({ name, color }: ComingSoonSubject
       {/* Contenido inferior */}
       <div className="p-5 pt-4 flex flex-col flex-1 bg-white/70">
         <p className="text-[10px] font-bold text-tinta/30 tracking-wider mb-3">PRÓXIMAMENTE</p>
-        <div className="mt-auto w-full text-center bg-tinta/5 text-tinta/30 text-xs font-bold py-2 rounded-lg tracking-wider">
+        <div className="mt-auto w-full text-center bg-tinta/5 text-tinta/30 text-xs font-bold py-2 rounded-xl tracking-wider">
           EN PREPARACIÓN
         </div>
       </div>

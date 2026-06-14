@@ -46,7 +46,7 @@ export default function AdminSubjectsPage() {
         <h1 className="font-display text-verde text-3xl mt-1">MATERIAS</h1>
       </div>
 
-      {msg && <p className="text-verde bg-verde/10 border border-verde/20 rounded-lg px-4 py-2 text-sm mb-4">{msg}</p>}
+      {msg && <p className="text-verde bg-verde/10 border border-verde/20 rounded-xl px-4 py-2 text-sm mb-4">{msg}</p>}
 
       <div className="space-y-2">
         {subjects.map(s => (
@@ -70,7 +70,7 @@ export default function AdminSubjectsPage() {
                       type="text"
                       value={editing.color}
                       onChange={e => setEditing({ ...editing, color: e.target.value })}
-                      className="bg-crema border border-tinta/15 rounded-lg px-3 py-2 text-sm text-tinta font-mono w-32 focus:outline-none focus:ring-2 focus:ring-verde/30"
+                      className="bg-crema border border-tinta/15 rounded-xl px-3 py-2 text-sm text-tinta font-mono w-32 focus:outline-none focus:ring-2 focus:ring-verde/30"
                     />
                   </div>
                 </div>
@@ -80,7 +80,7 @@ export default function AdminSubjectsPage() {
                     value={editing.description ?? ''}
                     onChange={e => setEditing({ ...editing, description: e.target.value })}
                     rows={2}
-                    className="w-full bg-crema border border-tinta/15 rounded-lg px-3 py-2 text-sm text-tinta resize-none focus:outline-none focus:ring-2 focus:ring-verde/30"
+                    className="w-full bg-crema border border-tinta/15 rounded-xl px-3 py-2 text-sm text-tinta resize-none focus:outline-none focus:ring-2 focus:ring-verde/30"
                     placeholder="Descripción breve de la materia..."
                   />
                 </div>
@@ -90,14 +90,14 @@ export default function AdminSubjectsPage() {
                     type="number"
                     value={editing.order_index}
                     onChange={e => setEditing({ ...editing, order_index: parseInt(e.target.value) || 0 })}
-                    className="bg-crema border border-tinta/15 rounded-lg px-3 py-2 text-sm text-tinta w-24 focus:outline-none focus:ring-2 focus:ring-verde/30"
+                    className="bg-crema border border-tinta/15 rounded-xl px-3 py-2 text-sm text-tinta w-24 focus:outline-none focus:ring-2 focus:ring-verde/30"
                   />
                 </div>
                 <div className="flex gap-2 pt-1">
                   <button
                     onClick={save}
                     disabled={saving}
-                    className="bg-amarillo text-tinta font-bold px-4 py-2 rounded-lg text-xs tracking-wider hover:bg-amarillo/80 transition-colors disabled:opacity-50"
+                    className="bg-amarillo text-tinta font-bold px-4 py-2 rounded-xl text-xs tracking-wider hover:bg-amarillo/80 transition-colors disabled:opacity-50"
                   >
                     {saving ? 'GUARDANDO...' : 'GUARDAR'}
                   </button>
@@ -121,7 +121,7 @@ export default function AdminSubjectsPage() {
                 </div>
                 <button
                   onClick={() => setEditing(s)}
-                  className="text-[10px] font-bold tracking-wider text-tinta/30 hover:text-verde transition-colors px-3 py-1.5 rounded-lg hover:bg-verde/10"
+                  className="text-[10px] font-bold tracking-wider text-tinta/30 hover:text-verde transition-colors px-3 py-1.5 rounded-xl hover:bg-verde/10"
                 >
                   EDITAR
                 </button>

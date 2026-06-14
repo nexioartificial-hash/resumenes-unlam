@@ -131,7 +131,7 @@ export default function AdminUsersPage() {
                       {u.subjects.map(s => {
                         const sub = subjects.find(x => x.slug === s.slug)
                         return (
-                          <div key={s.slug} className="flex items-center justify-between bg-crema/50 rounded-lg px-3 py-2">
+                          <div key={s.slug} className="flex items-center justify-between bg-crema/50 rounded-xl px-3 py-2">
                             <div>
                               <p className="text-tinta text-xs font-bold">{s.name}</p>
                               <p className="text-tinta/40 text-[10px]">Vence en {daysLeft(s.expires_at)} días</p>
@@ -159,7 +159,7 @@ export default function AdminUsersPage() {
                             key={s.id}
                             onClick={() => grantAccess(u.id, s.id)}
                             disabled={granting?.userId === u.id && granting?.subjectId === s.id}
-                            className="text-[10px] font-bold px-3 py-1.5 rounded-lg bg-verde/20 text-verde hover:bg-verde/30 transition-colors disabled:opacity-50 tracking-wider"
+                            className="text-[10px] font-bold px-3 py-1.5 rounded-xl bg-verde/20 text-verde hover:bg-verde/30 transition-colors disabled:opacity-50 tracking-wider"
                           >
                             + {s.name.toUpperCase()}
                           </button>

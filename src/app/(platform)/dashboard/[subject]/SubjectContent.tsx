@@ -70,31 +70,31 @@ export default function SubjectContent({ subject, modules, content }: SubjectCon
           </h1>
           <button
             onClick={() => router.push(`/dashboard/${slug}/quiz`)}
-            className="bg-amarillo text-tinta text-xs font-bold px-4 py-2 rounded-lg tracking-wider hover:bg-amarillo/80 transition-colors shrink-0"
+            className="bg-amarillo text-tinta text-xs font-bold px-4 py-2 rounded-xl tracking-wider hover:bg-amarillo/80 transition-colors shrink-0"
           >
             QUIZ →
           </button>
           <button
             onClick={() => router.push(`/dashboard/${slug}/repaso`)}
-            className="bg-tinta/10 text-tinta text-xs font-bold px-4 py-2 rounded-lg tracking-wider hover:bg-tinta/20 transition-colors shrink-0 border border-tinta/10"
+            className="bg-tinta/10 text-tinta text-xs font-bold px-4 py-2 rounded-xl tracking-wider hover:bg-tinta/20 transition-colors shrink-0 border border-tinta/10"
           >
             REPASO →
           </button>
           <button
             onClick={() => router.push(`/dashboard/${slug}/flashcards`)}
-            className="bg-tinta/10 text-tinta text-xs font-bold px-4 py-2 rounded-lg tracking-wider hover:bg-tinta/20 transition-colors shrink-0 border border-tinta/10"
+            className="bg-tinta/10 text-tinta text-xs font-bold px-4 py-2 rounded-xl tracking-wider hover:bg-tinta/20 transition-colors shrink-0 border border-tinta/10"
           >
             CARDS →
           </button>
           <button
             onClick={() => router.push(`/dashboard/${slug}/mapa`)}
-            className="bg-tinta/10 text-tinta text-xs font-bold px-4 py-2 rounded-lg tracking-wider hover:bg-tinta/20 transition-colors shrink-0 border border-tinta/10"
+            className="bg-tinta/10 text-tinta text-xs font-bold px-4 py-2 rounded-xl tracking-wider hover:bg-tinta/20 transition-colors shrink-0 border border-tinta/10"
           >
             MAPA →
           </button>
           <button
             onClick={() => router.push(`/dashboard/${slug}/ai`)}
-            className="bg-verde text-crema text-xs font-bold px-4 py-2 rounded-lg tracking-wider hover:bg-verde-claro transition-colors shrink-0"
+            className="bg-verde text-crema text-xs font-bold px-4 py-2 rounded-xl tracking-wider hover:bg-verde-claro transition-colors shrink-0"
           >
             IA →
           </button>
@@ -111,7 +111,7 @@ export default function SubjectContent({ subject, modules, content }: SubjectCon
       <div className="flex gap-2">
         <button
           onClick={() => setTab('modulos')}
-          className={`text-xs font-bold px-4 py-2 rounded-lg tracking-wider transition-colors ${
+          className={`text-xs font-bold px-4 py-2 rounded-xl tracking-wider transition-colors ${
             tab === 'modulos'
               ? 'bg-verde text-crema'
               : 'bg-white text-tinta/50 hover:bg-tinta/5 border border-tinta/10'
@@ -122,7 +122,7 @@ export default function SubjectContent({ subject, modules, content }: SubjectCon
         {supportTypes.length > 0 && (
           <button
             onClick={() => setTab('material')}
-            className={`text-xs font-bold px-4 py-2 rounded-lg tracking-wider transition-colors ${
+            className={`text-xs font-bold px-4 py-2 rounded-xl tracking-wider transition-colors ${
               tab === 'material'
                 ? 'bg-verde text-crema'
                 : 'bg-white text-tinta/50 hover:bg-tinta/5 border border-tinta/10'
@@ -133,7 +133,7 @@ export default function SubjectContent({ subject, modules, content }: SubjectCon
         )}
         <button
           onClick={() => setTab('predictor')}
-          className={`text-xs font-bold px-4 py-2 rounded-lg tracking-wider transition-colors ${
+          className={`text-xs font-bold px-4 py-2 rounded-xl tracking-wider transition-colors ${
             tab === 'predictor'
               ? 'bg-verde text-crema'
               : 'bg-white text-tinta/50 hover:bg-tinta/5 border border-tinta/10'
@@ -196,7 +196,7 @@ export default function SubjectContent({ subject, modules, content }: SubjectCon
               <button
                 key={item.id}
                 onClick={() => setSelectedItem(item)}
-                className={`text-left px-3 py-2.5 rounded-lg text-xs transition-colors flex items-start gap-2 ${
+                className={`text-left px-3 py-2.5 rounded-xl text-xs transition-colors flex items-start gap-2 ${
                   selectedItem?.id === item.id
                     ? 'bg-verde text-crema shadow-sm font-bold'
                     : 'text-tinta/50 hover:bg-tinta/5 hover:text-tinta'

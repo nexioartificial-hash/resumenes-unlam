@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
+import FeatureIntro from '@/components/ui/FeatureIntro'
 
 interface RepasoQuestion {
   id:            string
@@ -58,6 +59,18 @@ export default function RepasoPage() {
   // ── INICIO ──────────────────────────────────────────────────────────────────
   if (screen === 'start') return (
     <div className="max-w-lg mx-auto">
+      <FeatureIntro
+        featureKey="repaso"
+        icon="🔁"
+        title="Repaso inteligente"
+        description="El repaso te muestra las preguntas en las que más erraste o que menos practicaste. Es el modo más eficiente para reforzar antes del examen."
+        steps={[
+          { icon: '📉', text: 'Prioriza las preguntas con mayor tasa de error.' },
+          { icon: '🃏', text: 'Respondé y confirmá la respuesta correcta.' },
+          { icon: '📈', text: 'Con cada sesión el sistema ajusta qué preguntas mostrarte.' },
+        ]}
+        ctaLabel="Entendido"
+      />
       <button onClick={() => router.back()} className="text-tinta/40 hover:text-tinta text-sm mb-6 block">
         ← Volver
       </button>
@@ -68,14 +81,14 @@ export default function RepasoPage() {
           Las preguntas que más te costaron en tus simulacros anteriores, primero.
         </p>
         {noQuestions ? (
-          <p className="text-tinta/50 text-sm bg-tinta/5 rounded-lg p-4">
+          <p className="text-tinta/50 text-sm bg-tinta/5 rounded-xl p-4">
             No hay preguntas disponibles para repasar.
           </p>
         ) : (
           <button
             onClick={start}
             disabled={loading}
-            className="w-full bg-amarillo text-tinta font-bold py-3.5 rounded-lg tracking-wider hover:bg-amarillo/90 transition-colors disabled:opacity-50"
+            className="w-full bg-amarillo text-tinta font-bold py-3.5 rounded-xl tracking-wider hover:bg-amarillo/90 transition-colors disabled:opacity-50"
           >
             {loading ? 'CARGANDO...' : 'INICIAR REPASO'}
           </button>
@@ -105,21 +118,21 @@ export default function RepasoPage() {
       </div>
 
       <div
-        style={{ perspective: '1000px', cursor: flipped ? 'default' : 'pointer', minHeight: '240px' }}
+        style={{ perspective: '1000px' }}
         onClick={() => !flipped && setFlipped(true)}
         className="mb-4"
       >
         <div style={{
-          position:       'relative',
+          display:        'grid',
           transformStyle: 'preserve-3d',
           transition:     'transform 0.5s',
           transform:      flipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
-          minHeight:      '240px',
+          cursor:         flipped ? 'default' : 'pointer',
         }}>
           {/* Frente */}
           <div
-            style={{ backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden' }}
-            className="absolute inset-0 bg-white rounded-2xl p-8 shadow-sm border border-tinta/5 flex flex-col justify-between"
+            style={{ backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden', gridArea: '1 / 1' }}
+            className="bg-white rounded-2xl p-8 shadow-sm border border-tinta/5 flex flex-col justify-between min-h-[220px]"
           >
             <p className="text-[10px] font-bold tracking-widest text-tinta/30">
               PREGUNTA — tocá para ver la respuesta
@@ -133,11 +146,11 @@ export default function RepasoPage() {
           </div>
           {/* Dorso */}
           <div
-            style={{ backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}
-            className="absolute inset-0 bg-white rounded-2xl p-8 shadow-sm border border-verde/20 flex flex-col gap-4"
+            style={{ backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden', transform: 'rotateY(180deg)', gridArea: '1 / 1' }}
+            className="bg-white rounded-2xl px-8 py-6 shadow-sm border border-verde/20 flex flex-col justify-center gap-3 min-h-[220px]"
           >
             <p className="text-[10px] font-bold tracking-widest text-verde/60">RESPUESTA CORRECTA</p>
-            <p className="text-verde font-bold text-base">{q.options[q.correct_index]}</p>
+            <p className="text-verde font-bold text-base leading-snug">{q.options[q.correct_index]}</p>
             {q.explanation && (
               <p className="text-tinta/60 text-sm leading-relaxed border-t border-tinta/10 pt-3">
                 {q.explanation}
@@ -151,13 +164,13 @@ export default function RepasoPage() {
         <div className="flex gap-3">
           <button
             onClick={() => answer(false)}
-            className="flex-1 bg-rojo/10 text-rojo font-bold py-3.5 rounded-lg tracking-wider hover:bg-rojo/20 transition-colors"
+            className="flex-1 bg-rojo/10 text-rojo font-bold py-3.5 rounded-xl tracking-wider hover:bg-rojo/20 transition-colors"
           >
             NO LO SABÍA
           </button>
           <button
             onClick={() => answer(true)}
-            className="flex-1 bg-verde/10 text-verde font-bold py-3.5 rounded-lg tracking-wider hover:bg-verde/20 transition-colors"
+            className="flex-1 bg-verde/10 text-verde font-bold py-3.5 rounded-xl tracking-wider hover:bg-verde/20 transition-colors"
           >
             LO SABÍA ✓
           </button>
@@ -182,13 +195,13 @@ export default function RepasoPage() {
           <div className="flex gap-3">
             <button
               onClick={start}
-              className="flex-1 bg-amarillo text-tinta font-bold py-3 rounded-lg tracking-wider hover:bg-amarillo/90 transition-colors"
+              className="flex-1 bg-amarillo text-tinta font-bold py-3 rounded-xl tracking-wider hover:bg-amarillo/90 transition-colors"
             >
               REPETIR
             </button>
             <button
               onClick={() => router.back()}
-              className="flex-1 bg-tinta/10 text-tinta font-bold py-3 rounded-lg tracking-wider hover:bg-tinta/20 transition-colors"
+              className="flex-1 bg-tinta/10 text-tinta font-bold py-3 rounded-xl tracking-wider hover:bg-tinta/20 transition-colors"
             >
               VOLVER
             </button>

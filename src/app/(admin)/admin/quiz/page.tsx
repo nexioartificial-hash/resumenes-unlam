@@ -99,17 +99,17 @@ export default function AdminQuizPage() {
           <p className="text-tinta/40 text-[10px] font-bold tracking-widest">ADMIN</p>
           <h1 className="font-display text-verde text-3xl mt-1">QUIZ</h1>
         </div>
-        <button onClick={openCreate} className="bg-amarillo text-tinta font-bold px-5 py-2.5 rounded-lg text-xs tracking-wider hover:bg-amarillo/80 transition-colors">
+        <button onClick={openCreate} className="bg-amarillo text-tinta font-bold px-5 py-2.5 rounded-xl text-xs tracking-wider hover:bg-amarillo/80 transition-colors">
           + NUEVA PREGUNTA
         </button>
       </div>
 
-      {msg && <p className="text-verde bg-verde/10 border border-verde/20 rounded-lg px-4 py-2 text-sm mb-4">{msg}</p>}
+      {msg && <p className="text-verde bg-verde/10 border border-verde/20 rounded-xl px-4 py-2 text-sm mb-4">{msg}</p>}
 
       <div className="flex gap-2 mb-5 flex-wrap">
-        <button onClick={() => { setFilter(''); loadQuestions('') }} className={`text-xs font-bold px-3 py-1.5 rounded-lg transition-colors ${!filter ? 'bg-amarillo text-tinta' : 'bg-tinta/5 text-tinta/60 hover:bg-tinta/10'}`}>TODAS</button>
+        <button onClick={() => { setFilter(''); loadQuestions('') }} className={`text-xs font-bold px-3 py-1.5 rounded-xl transition-colors ${!filter ? 'bg-amarillo text-tinta' : 'bg-tinta/5 text-tinta/60 hover:bg-tinta/10'}`}>TODAS</button>
         {subjects.map(s => (
-          <button key={s.id} onClick={() => { setFilter(s.id); loadQuestions(s.id) }} className={`text-xs font-bold px-3 py-1.5 rounded-lg transition-colors ${filter === s.id ? 'bg-amarillo text-tinta' : 'bg-tinta/5 text-tinta/60 hover:bg-tinta/10'}`}>
+          <button key={s.id} onClick={() => { setFilter(s.id); loadQuestions(s.id) }} className={`text-xs font-bold px-3 py-1.5 rounded-xl transition-colors ${filter === s.id ? 'bg-amarillo text-tinta' : 'bg-tinta/5 text-tinta/60 hover:bg-tinta/10'}`}>
             {s.name.toUpperCase()}
           </button>
         ))}
@@ -145,13 +145,13 @@ export default function AdminQuizPage() {
               <div className="grid grid-cols-3 gap-4">
                 <div className="col-span-2">
                   <label className="text-[10px] font-bold tracking-widest text-tinta/40 block mb-1">MATERIA</label>
-                  <select value={form.subject_id} onChange={e => setForm(f => ({ ...f, subject_id: e.target.value }))} className="w-full bg-crema border border-tinta/15 rounded-lg px-3 py-2 text-sm text-tinta focus:outline-none focus:ring-2 focus:ring-verde/30">
+                  <select value={form.subject_id} onChange={e => setForm(f => ({ ...f, subject_id: e.target.value }))} className="w-full bg-crema border border-tinta/15 rounded-xl px-3 py-2 text-sm text-tinta focus:outline-none focus:ring-2 focus:ring-verde/30">
                     {subjects.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
                   </select>
                 </div>
                 <div>
                   <label className="text-[10px] font-bold tracking-widest text-tinta/40 block mb-1">DIFICULTAD</label>
-                  <select value={form.difficulty} onChange={e => setForm(f => ({ ...f, difficulty: e.target.value as typeof f.difficulty }))} className="w-full bg-crema border border-tinta/15 rounded-lg px-3 py-2 text-sm text-tinta focus:outline-none focus:ring-2 focus:ring-verde/30">
+                  <select value={form.difficulty} onChange={e => setForm(f => ({ ...f, difficulty: e.target.value as typeof f.difficulty }))} className="w-full bg-crema border border-tinta/15 rounded-xl px-3 py-2 text-sm text-tinta focus:outline-none focus:ring-2 focus:ring-verde/30">
                     <option value="easy">Fácil</option>
                     <option value="medium">Medio</option>
                     <option value="hard">Difícil</option>
@@ -160,7 +160,7 @@ export default function AdminQuizPage() {
               </div>
               <div>
                 <label className="text-[10px] font-bold tracking-widest text-tinta/40 block mb-1">PREGUNTA</label>
-                <textarea value={form.question} onChange={e => setForm(f => ({ ...f, question: e.target.value }))} rows={3} className="w-full bg-crema border border-tinta/15 rounded-lg px-3 py-2 text-sm text-tinta focus:outline-none focus:ring-2 focus:ring-verde/30 resize-none" placeholder="Texto de la pregunta..." />
+                <textarea value={form.question} onChange={e => setForm(f => ({ ...f, question: e.target.value }))} rows={3} className="w-full bg-crema border border-tinta/15 rounded-xl px-3 py-2 text-sm text-tinta focus:outline-none focus:ring-2 focus:ring-verde/30 resize-none" placeholder="Texto de la pregunta..." />
               </div>
               <div>
                 <label className="text-[10px] font-bold tracking-widest text-tinta/40 block mb-2">OPCIONES <span className="text-tinta/30 normal-case font-normal">(marcá la correcta)</span></label>
@@ -178,7 +178,7 @@ export default function AdminQuizPage() {
                       <input
                         value={opt.text}
                         onChange={e => setOptionText(i, e.target.value)}
-                        className="flex-1 bg-crema border border-tinta/15 rounded-lg px-3 py-2 text-sm text-tinta focus:outline-none focus:ring-2 focus:ring-verde/30"
+                        className="flex-1 bg-crema border border-tinta/15 rounded-xl px-3 py-2 text-sm text-tinta focus:outline-none focus:ring-2 focus:ring-verde/30"
                         placeholder={`Opción ${String.fromCharCode(65 + i)}`}
                       />
                     </div>
@@ -187,12 +187,12 @@ export default function AdminQuizPage() {
               </div>
               <div>
                 <label className="text-[10px] font-bold tracking-widest text-tinta/40 block mb-1">EXPLICACIÓN <span className="text-tinta/30 normal-case font-normal">(opcional)</span></label>
-                <textarea value={form.explanation} onChange={e => setForm(f => ({ ...f, explanation: e.target.value }))} rows={2} className="w-full bg-crema border border-tinta/15 rounded-lg px-3 py-2 text-sm text-tinta focus:outline-none focus:ring-2 focus:ring-verde/30 resize-none" placeholder="Por qué esta opción es correcta..." />
+                <textarea value={form.explanation} onChange={e => setForm(f => ({ ...f, explanation: e.target.value }))} rows={2} className="w-full bg-crema border border-tinta/15 rounded-xl px-3 py-2 text-sm text-tinta focus:outline-none focus:ring-2 focus:ring-verde/30 resize-none" placeholder="Por qué esta opción es correcta..." />
               </div>
               <div className="flex items-center gap-6">
                 <div>
                   <label className="text-[10px] font-bold tracking-widest text-tinta/40 block mb-1">ORDEN</label>
-                  <input type="number" value={form.order_index} onChange={e => setForm(f => ({ ...f, order_index: parseInt(e.target.value) || 0 }))} className="bg-crema border border-tinta/15 rounded-lg px-3 py-2 text-sm text-tinta focus:outline-none focus:ring-2 focus:ring-verde/30 w-24" />
+                  <input type="number" value={form.order_index} onChange={e => setForm(f => ({ ...f, order_index: parseInt(e.target.value) || 0 }))} className="bg-crema border border-tinta/15 rounded-xl px-3 py-2 text-sm text-tinta focus:outline-none focus:ring-2 focus:ring-verde/30 w-24" />
                 </div>
                 <label className="flex items-center gap-2 cursor-pointer mt-4">
                   <input type="checkbox" checked={form.is_published} onChange={e => setForm(f => ({ ...f, is_published: e.target.checked }))} className="w-4 h-4 accent-amarillo" />
@@ -201,7 +201,7 @@ export default function AdminQuizPage() {
               </div>
             </div>
             <div className="flex gap-3 mt-6">
-              <button onClick={save} disabled={saving} className="bg-amarillo text-tinta font-bold px-6 py-2.5 rounded-lg text-xs tracking-wider hover:bg-amarillo/80 transition-colors disabled:opacity-50">
+              <button onClick={save} disabled={saving} className="bg-amarillo text-tinta font-bold px-6 py-2.5 rounded-xl text-xs tracking-wider hover:bg-amarillo/80 transition-colors disabled:opacity-50">
                 {saving ? 'GUARDANDO...' : 'GUARDAR'}
               </button>
               <button onClick={() => setShowForm(false)} className="text-tinta/40 hover:text-tinta font-bold text-xs px-4 transition-colors">CANCELAR</button>

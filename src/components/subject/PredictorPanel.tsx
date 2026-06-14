@@ -121,7 +121,7 @@ export default function PredictorPanel({ slug }: { slug: string }) {
       </p>
       <button
         onClick={() => router.push(`/dashboard/${slug}/quiz`)}
-        className="bg-amarillo text-tinta text-xs font-bold px-5 py-2.5 rounded-lg tracking-wider hover:bg-amarillo/90 transition-colors"
+        className="bg-amarillo text-tinta text-xs font-bold px-5 py-2.5 rounded-xl tracking-wider hover:bg-amarillo/90 transition-colors"
       >
         IR AL SIMULACRO →
       </button>
@@ -169,7 +169,7 @@ export default function PredictorPanel({ slug }: { slug: string }) {
           </div>
           <button
             onClick={() => router.push(`/dashboard/${slug}/repaso`)}
-            className="mt-5 w-full bg-tinta/5 border border-tinta/10 text-tinta text-xs font-bold py-2.5 rounded-lg tracking-wider hover:bg-tinta/10 transition-colors"
+            className="mt-5 w-full bg-tinta/5 border border-tinta/10 text-tinta text-xs font-bold py-2.5 rounded-xl tracking-wider hover:bg-tinta/10 transition-colors"
           >
             REPASAR ESTAS PREGUNTAS →
           </button>

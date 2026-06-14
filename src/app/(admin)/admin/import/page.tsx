@@ -115,11 +115,11 @@ export default function AdminImportPage() {
       <div className="flex gap-3 mb-5">
         <button
           onClick={downloadTemplate}
-          className="bg-verde/20 text-verde font-bold px-4 py-2.5 rounded-lg text-xs tracking-wider hover:bg-verde/30 transition-colors"
+          className="bg-verde/20 text-verde font-bold px-4 py-2.5 rounded-xl text-xs tracking-wider hover:bg-verde/30 transition-colors"
         >
           ↓ DESCARGAR TEMPLATE
         </button>
-        <label className="bg-tinta/5 text-tinta font-bold px-4 py-2.5 rounded-lg text-xs tracking-wider hover:bg-tinta/10 transition-colors cursor-pointer">
+        <label className="bg-tinta/5 text-tinta font-bold px-4 py-2.5 rounded-xl text-xs tracking-wider hover:bg-tinta/10 transition-colors cursor-pointer">
           📂 CARGAR ARCHIVO .JSON
           <input type="file" accept=".json,application/json" onChange={loadFile} className="hidden" />
         </label>
@@ -163,7 +163,7 @@ export default function AdminImportPage() {
       <button
         onClick={importContent}
         disabled={loading || !json.trim()}
-        className="bg-amarillo text-tinta font-bold px-8 py-3 rounded-lg tracking-wider hover:bg-amarillo/80 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+        className="bg-amarillo text-tinta font-bold px-8 py-3 rounded-xl tracking-wider hover:bg-amarillo/80 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
       >
         {loading ? 'IMPORTANDO...' : 'IMPORTAR'}
       </button>

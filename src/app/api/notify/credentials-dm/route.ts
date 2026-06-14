@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: true })
   }
 
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://resumenesunlam.vercel.app'
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://resumenesunlam.site'
   let message: string
 
   if (password) {

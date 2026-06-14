@@ -108,8 +108,8 @@ export default function ProgressPage() {
           <div key={i} className="rounded-2xl overflow-hidden">
             <div className="h-36 bg-tinta/10" />
             <div className="bg-white p-4 flex gap-2">
-              <div className="h-7 w-24 bg-tinta/6 rounded-lg" />
-              <div className="h-7 w-24 bg-tinta/6 rounded-lg" />
+              <div className="h-7 w-24 bg-tinta/6 rounded-xl" />
+              <div className="h-7 w-24 bg-tinta/6 rounded-xl" />
             </div>
           </div>
         ))}
@@ -326,7 +326,7 @@ export default function ProgressPage() {
                 <div className="bg-white px-5 py-4 flex items-center gap-2 flex-wrap">
 
                   {/* Quizzes chip */}
-                  <div className="inline-flex items-center gap-1.5 border border-tinta/10 rounded-lg px-2.5 py-1.5">
+                  <div className="inline-flex items-center gap-1.5 border border-tinta/10 rounded-xl px-2.5 py-1.5">
                     <span className="text-[9px] tracking-widest text-tinta/35 font-bold">QUIZZES</span>
                     <span className="text-[11px] font-bold text-tinta">{s.quiz_count}</span>
                   </div>
@@ -334,7 +334,7 @@ export default function ProgressPage() {
                   {/* Best score chip */}
                   {s.best_pct !== null && (
                     <div
-                      className="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 border"
+                      className="inline-flex items-center gap-1.5 rounded-xl px-2.5 py-1.5 border"
                       style={{
                         borderColor: s.best_pct >= 60 ? 'rgba(15,63,38,0.22)' : 'rgba(200,51,42,0.22)',
                         backgroundColor: s.best_pct >= 60 ? 'rgba(15,63,38,0.05)' : 'rgba(200,51,42,0.05)',
@@ -352,7 +352,7 @@ export default function ProgressPage() {
 
                   {/* Last quiz chip */}
                   {s.last_quiz && (
-                    <div className="inline-flex items-center gap-1.5 border border-tinta/10 rounded-lg px-2.5 py-1.5">
+                    <div className="inline-flex items-center gap-1.5 border border-tinta/10 rounded-xl px-2.5 py-1.5">
                       <span className="text-[9px] tracking-widest text-tinta/35 font-bold">ÚLTIMO</span>
                       <span className="text-[11px] font-bold text-tinta">
                         {s.last_quiz.score}/{s.last_quiz.total}
@@ -367,14 +367,14 @@ export default function ProgressPage() {
                   {s.quiz_count === 0 ? (
                     <button
                       onClick={() => router.push(`/dashboard/${s.slug}/quiz`)}
-                      className="ml-auto text-[10px] font-bold tracking-widest bg-amarillo text-tinta px-4 py-1.5 rounded-lg hover:opacity-85 active:scale-95 transition-all duration-200"
+                      className="ml-auto text-[10px] font-bold tracking-widest bg-amarillo text-tinta px-4 py-1.5 rounded-xl hover:opacity-85 active:scale-95 transition-all duration-200"
                     >
                       HACER QUIZ →
                     </button>
                   ) : (
                     <button
                       onClick={() => router.push(`/dashboard/${s.slug}`)}
-                      className="ml-auto text-[10px] font-bold tracking-widest text-white px-4 py-1.5 rounded-lg hover:opacity-85 active:scale-95 transition-all duration-200"
+                      className="ml-auto text-[10px] font-bold tracking-widest text-white px-4 py-1.5 rounded-xl hover:opacity-85 active:scale-95 transition-all duration-200"
                       style={{ backgroundColor: accent }}
                     >
                       IR →

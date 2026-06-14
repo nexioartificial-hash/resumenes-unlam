@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
+import FeatureIntro from '@/components/ui/FeatureIntro'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import type { FormEvent } from 'react'
@@ -43,9 +44,10 @@ export default function AIPage() {
   const [subjectName, setSubjectName] = useState('')
 
   // Chat state
-  const [messages,  setMessages]  = useState<ChatMessage[]>([])
-  const [input,     setInput]     = useState('')
-  const [chatLoading, setChatLoading] = useState(false)
+  const [messages,     setMessages]     = useState<ChatMessage[]>([])
+  const [input,        setInput]        = useState('')
+  const [chatLoading,  setChatLoading]  = useState(false)
+  const [historyLoading, setHistoryLoading] = useState(true)
   const bottomRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -56,6 +58,20 @@ export default function AIPage() {
         if (found) setSubjectName(found.subject.name)
       })
       .catch(() => {})
+  }, [slug])
+
+  // Cargar historial persistente al montar
+  useEffect(() => {
+    setHistoryLoading(true)
+    fetch(`/api/subjects/${slug}/ai/history`)
+      .then(r => r.json())
+      .then((history: { id: string; role: 'user' | 'assistant'; content: string }[]) => {
+        if (Array.isArray(history) && history.length > 0) {
+          setMessages(history.map(m => ({ id: m.id, role: m.role, content: m.content })))
+        }
+      })
+      .catch(() => {})
+      .finally(() => setHistoryLoading(false))
   }, [slug])
 
   useEffect(() => {
@@ -86,7 +102,10 @@ export default function AIPage() {
         }),
       })
 
-      if (!res.ok || !res.body) throw new Error('stream error')
+      if (!res.ok || !res.body) {
+        const errText = await res.text().catch(() => '')
+        throw new Error(`${res.status}: ${errText || 'sin detalle'}`)
+      }
 
       const reader  = res.body.getReader()
       const decoder = new TextDecoder()
@@ -100,9 +119,10 @@ export default function AIPage() {
           m.id === assistantId ? { ...m, content: m.content + chunk } : m
         ))
       }
-    } catch {
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'error desconocido'
       setMessages(prev => prev.map(m =>
-        m.id === assistantId ? { ...m, content: 'Error al obtener respuesta. Verificá la clave de Groq en .env.local.' } : m
+        m.id === assistantId ? { ...m, content: `Error: ${msg}` } : m
       ))
     }
 
@@ -136,6 +156,19 @@ export default function AIPage() {
 
   return (
     <div className="flex flex-col h-full max-w-2xl mx-auto">
+      <FeatureIntro
+        featureKey="ai-chat"
+        icon="🤖"
+        title="Asistente IA de estudio"
+        description="Podés preguntarle cualquier cosa sobre la materia: que te explique un concepto, que compare temas, que te dé ejemplos o que te ayude a repasar antes del examen."
+        steps={[
+          { icon: '💬', text: 'Escribí tu pregunta en el chat y mandala.' },
+          { icon: '📚', text: 'El asistente responde basándose en el material de los módulos.' },
+          { icon: '🔗', text: 'Siempre cita de qué módulo saca la información.' },
+          { icon: '📝', text: 'También podés pedirle que genere preguntas de práctica.' },
+        ]}
+        ctaLabel="Empezar a chatear"
+      />
 
       {/* Header */}
       <div className="bg-white rounded-2xl p-5 shadow-sm border border-tinta/5 mb-4 shrink-0">
@@ -154,10 +187,10 @@ export default function AIPage() {
             </h1>
           </div>
           {/* Tabs */}
-          <div className="flex gap-1 bg-tinta/5 rounded-lg p-1">
+          <div className="flex gap-1 bg-tinta/5 rounded-xl p-1">
             <button
               onClick={() => setTab('chat')}
-              className={`text-xs font-bold px-3 py-1.5 rounded-md transition-colors ${
+              className={`text-xs font-bold px-3 py-1.5 rounded-xl transition-colors ${
                 tab === 'chat' ? 'bg-white text-verde shadow-sm' : 'text-tinta/50 hover:text-tinta'
               }`}
             >
@@ -165,7 +198,7 @@ export default function AIPage() {
             </button>
             <button
               onClick={() => setTab('exam')}
-              className={`text-xs font-bold px-3 py-1.5 rounded-md transition-colors ${
+              className={`text-xs font-bold px-3 py-1.5 rounded-xl transition-colors ${
                 tab === 'exam' ? 'bg-white text-verde shadow-sm' : 'text-tinta/50 hover:text-tinta'
               }`}
             >
@@ -181,7 +214,17 @@ export default function AIPage() {
 
           {/* Messages */}
           <div className="flex-1 overflow-y-auto space-y-3 pr-1">
-            {messages.length === 0 && (
+            {historyLoading && (
+              <div className="flex justify-center py-8">
+                <div className="flex gap-1 items-center">
+                  <span className="w-1.5 h-1.5 bg-verde/40 rounded-full animate-bounce [animation-delay:0ms]" />
+                  <span className="w-1.5 h-1.5 bg-verde/40 rounded-full animate-bounce [animation-delay:150ms]" />
+                  <span className="w-1.5 h-1.5 bg-verde/40 rounded-full animate-bounce [animation-delay:300ms]" />
+                </div>
+              </div>
+            )}
+
+            {!historyLoading && messages.length === 0 && (
               <div className="bg-white rounded-2xl p-8 text-center shadow-sm border border-tinta/5">
                 <p className="text-3xl mb-3">🤖</p>
                 <p className="font-display text-verde text-xl mb-1">ASISTENTE DE ESTUDIO</p>
@@ -247,7 +290,10 @@ export default function AIPage() {
             </form>
             {messages.length > 0 && (
               <button
-                onClick={() => setMessages([])}
+                onClick={async () => {
+                  await fetch(`/api/subjects/${slug}/ai/history`, { method: 'DELETE' })
+                  setMessages([])
+                }}
                 className="text-tinta/30 text-xs hover:text-tinta/60 mt-2 transition-colors"
               >
                 Limpiar conversación
@@ -270,7 +316,7 @@ export default function AIPage() {
               </p>
               <button
                 onClick={generateQuestion}
-                className="bg-amarillo text-tinta font-bold px-8 py-3 rounded-lg tracking-wider hover:bg-amarillo/80 transition-colors"
+                className="bg-amarillo text-tinta font-bold px-8 py-3 rounded-xl tracking-wider hover:bg-amarillo/80 transition-colors"
               >
                 GENERAR PREGUNTA
               </button>
@@ -350,7 +396,7 @@ export default function AIPage() {
                   <button
                     onClick={evaluateAnswer}
                     disabled={examState.selected === null}
-                    className="flex-1 bg-amarillo text-tinta font-bold py-3 rounded-lg tracking-wider hover:bg-amarillo/80 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                    className="flex-1 bg-amarillo text-tinta font-bold py-3 rounded-xl tracking-wider hover:bg-amarillo/80 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                   >
                     CONFIRMAR RESPUESTA
                   </button>
@@ -358,7 +404,7 @@ export default function AIPage() {
                 {examState.phase === 'answered' && (
                   <button
                     onClick={generateQuestion}
-                    className="flex-1 bg-verde text-crema font-bold py-3 rounded-lg tracking-wider hover:bg-verde-claro transition-colors"
+                    className="flex-1 bg-verde text-crema font-bold py-3 rounded-xl tracking-wider hover:bg-verde-claro transition-colors"
                   >
                     SIGUIENTE PREGUNTA →
                   </button>

@@ -60,7 +60,7 @@
               <table cellpadding="0" cellspacing="0" width="100%">
                 <tr>
                   <td align="center">
-                    <a href="{{ .ConfirmationURL }}"
+                    <a href="{{ .SiteURL }}/auth/callback?token_hash={{ .TokenHash }}&type=signup&next=/dashboard"
                        style="display:inline-block;background-color:#0F3F26;color:#F2EFE6;font-size:13px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;text-decoration:none;padding:16px 40px;border-radius:12px;">
                       CONFIRMAR MI CUENTA →
                     </a>
@@ -71,7 +71,7 @@
               <!-- Link alternativo -->
               <p style="margin:28px 0 0;color:rgba(10,10,10,0.35);font-size:12px;line-height:1.6;text-align:center;">
                 Si el botón no funciona, copiá este link en tu navegador:<br/>
-                <a href="{{ .ConfirmationURL }}" style="color:#0F3F26;word-break:break-all;">{{ .ConfirmationURL }}</a>
+                <a href="{{ .SiteURL }}/auth/callback?token_hash={{ .TokenHash }}&type=signup&next=/dashboard" style="color:#0F3F26;word-break:break-all;">{{ .SiteURL }}/auth/callback</a>
               </p>
             </td>
           </tr>

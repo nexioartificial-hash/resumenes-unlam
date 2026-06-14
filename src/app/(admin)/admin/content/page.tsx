@@ -106,20 +106,20 @@ export default function AdminContentPage() {
           <p className="text-tinta/40 text-[10px] font-bold tracking-widest">ADMIN</p>
           <h1 className="font-display text-verde text-3xl mt-1">CONTENIDO</h1>
         </div>
-        <button onClick={openCreate} className="bg-amarillo text-tinta font-bold px-5 py-2.5 rounded-lg text-xs tracking-wider hover:bg-amarillo/80 transition-colors">
+        <button onClick={openCreate} className="bg-amarillo text-tinta font-bold px-5 py-2.5 rounded-xl text-xs tracking-wider hover:bg-amarillo/80 transition-colors">
           + NUEVO ÍTEM
         </button>
       </div>
 
-      {msg && <p className="text-verde bg-verde/10 border border-verde/20 rounded-lg px-4 py-2 text-sm mb-4">{msg}</p>}
+      {msg && <p className="text-verde bg-verde/10 border border-verde/20 rounded-xl px-4 py-2 text-sm mb-4">{msg}</p>}
 
       {/* Filtro por materia */}
       <div className="flex gap-2 mb-5 flex-wrap">
-        <button onClick={() => { setFilter(''); loadItems('') }} className={`text-xs font-bold px-3 py-1.5 rounded-lg transition-colors ${!filter ? 'bg-amarillo text-tinta' : 'bg-tinta/5 text-tinta/60 hover:bg-tinta/10'}`}>
+        <button onClick={() => { setFilter(''); loadItems('') }} className={`text-xs font-bold px-3 py-1.5 rounded-xl transition-colors ${!filter ? 'bg-amarillo text-tinta' : 'bg-tinta/5 text-tinta/60 hover:bg-tinta/10'}`}>
           TODAS
         </button>
         {subjects.map(s => (
-          <button key={s.id} onClick={() => { setFilter(s.id); loadItems(s.id) }} className={`text-xs font-bold px-3 py-1.5 rounded-lg transition-colors ${filter === s.id ? 'bg-amarillo text-tinta' : 'bg-tinta/5 text-tinta/60 hover:bg-tinta/10'}`}>
+          <button key={s.id} onClick={() => { setFilter(s.id); loadItems(s.id) }} className={`text-xs font-bold px-3 py-1.5 rounded-xl transition-colors ${filter === s.id ? 'bg-amarillo text-tinta' : 'bg-tinta/5 text-tinta/60 hover:bg-tinta/10'}`}>
             {s.name.toUpperCase()}
           </button>
         ))}
@@ -161,25 +161,25 @@ export default function AdminContentPage() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="text-[10px] font-bold tracking-widest text-tinta/40 block mb-1">MATERIA</label>
-                  <select value={form.subject_id} onChange={e => setForm(f => ({ ...f, subject_id: e.target.value }))} className="w-full bg-crema border border-tinta/15 rounded-lg px-3 py-2 text-sm text-tinta focus:outline-none focus:ring-2 focus:ring-verde/30">
+                  <select value={form.subject_id} onChange={e => setForm(f => ({ ...f, subject_id: e.target.value }))} className="w-full bg-crema border border-tinta/15 rounded-xl px-3 py-2 text-sm text-tinta focus:outline-none focus:ring-2 focus:ring-verde/30">
                     {subjects.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
                   </select>
                 </div>
                 <div>
                   <label className="text-[10px] font-bold tracking-widest text-tinta/40 block mb-1">TIPO</label>
-                  <select value={form.type} onChange={e => setForm(f => ({ ...f, type: e.target.value as typeof f.type }))} className="w-full bg-crema border border-tinta/15 rounded-lg px-3 py-2 text-sm text-tinta focus:outline-none focus:ring-2 focus:ring-verde/30">
+                  <select value={form.type} onChange={e => setForm(f => ({ ...f, type: e.target.value as typeof f.type }))} className="w-full bg-crema border border-tinta/15 rounded-xl px-3 py-2 text-sm text-tinta focus:outline-none focus:ring-2 focus:ring-verde/30">
                     {Object.entries(TYPE_LABELS).map(([v, l]) => <option key={v} value={v}>{l}</option>)}
                   </select>
                 </div>
               </div>
               <div>
                 <label className="text-[10px] font-bold tracking-widest text-tinta/40 block mb-1">TÍTULO</label>
-                <input value={form.title} onChange={e => setForm(f => ({ ...f, title: e.target.value }))} className="w-full bg-crema border border-tinta/15 rounded-lg px-3 py-2 text-sm text-tinta focus:outline-none focus:ring-2 focus:ring-verde/30" placeholder="Título del ítem" />
+                <input value={form.title} onChange={e => setForm(f => ({ ...f, title: e.target.value }))} className="w-full bg-crema border border-tinta/15 rounded-xl px-3 py-2 text-sm text-tinta focus:outline-none focus:ring-2 focus:ring-verde/30" placeholder="Título del ítem" />
               </div>
               {form.type !== 'audio' && (
                 <div>
                   <label className="text-[10px] font-bold tracking-widest text-tinta/40 block mb-1">CONTENIDO (Markdown)</label>
-                  <textarea value={form.body} onChange={e => setForm(f => ({ ...f, body: e.target.value }))} rows={10} className="w-full bg-crema border border-tinta/15 rounded-lg px-3 py-2 text-sm text-tinta focus:outline-none focus:ring-2 focus:ring-verde/30 font-mono resize-y" placeholder="# Título&#10;&#10;Contenido en Markdown..." />
+                  <textarea value={form.body} onChange={e => setForm(f => ({ ...f, body: e.target.value }))} rows={10} className="w-full bg-crema border border-tinta/15 rounded-xl px-3 py-2 text-sm text-tinta focus:outline-none focus:ring-2 focus:ring-verde/30 font-mono resize-y" placeholder="# Título&#10;&#10;Contenido en Markdown..." />
                 </div>
               )}
               {form.type === 'audio' && (
@@ -202,18 +202,18 @@ export default function AdminContentPage() {
                         if (res.ok) setForm(f => ({ ...f, audio_url: data.url }))
                         else alert(data.error ?? 'Error al subir')
                       }}
-                      className="w-full bg-crema border border-tinta/15 rounded-lg px-3 py-2 text-sm text-tinta/70 file:mr-3 file:bg-amarillo file:text-tinta file:font-bold file:text-xs file:px-3 file:py-1 file:rounded file:border-0 file:cursor-pointer disabled:opacity-50"
+                      className="w-full bg-crema border border-tinta/15 rounded-xl px-3 py-2 text-sm text-tinta/70 file:mr-3 file:bg-amarillo file:text-tinta file:font-bold file:text-xs file:px-3 file:py-1 file:rounded file:border-0 file:cursor-pointer disabled:opacity-50"
                     />
                     {uploading && <p className="text-xs text-amarillo mt-1">Subiendo audio...</p>}
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <label className="text-[10px] font-bold tracking-widest text-tinta/40 block mb-1">URL DEL AUDIO</label>
-                      <input value={form.audio_url} onChange={e => setForm(f => ({ ...f, audio_url: e.target.value }))} className="w-full bg-crema border border-tinta/15 rounded-lg px-3 py-2 text-sm text-tinta focus:outline-none focus:ring-2 focus:ring-verde/30" placeholder="https://... (se completa automáticamente al subir)" />
+                      <input value={form.audio_url} onChange={e => setForm(f => ({ ...f, audio_url: e.target.value }))} className="w-full bg-crema border border-tinta/15 rounded-xl px-3 py-2 text-sm text-tinta focus:outline-none focus:ring-2 focus:ring-verde/30" placeholder="https://... (se completa automáticamente al subir)" />
                     </div>
                     <div>
                       <label className="text-[10px] font-bold tracking-widest text-tinta/40 block mb-1">DURACIÓN (segundos)</label>
-                      <input type="number" value={form.duration_seconds} onChange={e => setForm(f => ({ ...f, duration_seconds: parseInt(e.target.value) || 0 }))} className="w-full bg-crema border border-tinta/15 rounded-lg px-3 py-2 text-sm text-tinta focus:outline-none focus:ring-2 focus:ring-verde/30" />
+                      <input type="number" value={form.duration_seconds} onChange={e => setForm(f => ({ ...f, duration_seconds: parseInt(e.target.value) || 0 }))} className="w-full bg-crema border border-tinta/15 rounded-xl px-3 py-2 text-sm text-tinta focus:outline-none focus:ring-2 focus:ring-verde/30" />
                     </div>
                   </div>
                 </div>
@@ -221,7 +221,7 @@ export default function AdminContentPage() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="text-[10px] font-bold tracking-widest text-tinta/40 block mb-1">ORDEN</label>
-                  <input type="number" value={form.order_index} onChange={e => setForm(f => ({ ...f, order_index: parseInt(e.target.value) || 0 }))} className="w-full bg-crema border border-tinta/15 rounded-lg px-3 py-2 text-sm text-tinta focus:outline-none focus:ring-2 focus:ring-verde/30" />
+                  <input type="number" value={form.order_index} onChange={e => setForm(f => ({ ...f, order_index: parseInt(e.target.value) || 0 }))} className="w-full bg-crema border border-tinta/15 rounded-xl px-3 py-2 text-sm text-tinta focus:outline-none focus:ring-2 focus:ring-verde/30" />
                 </div>
                 <div className="flex items-end pb-1">
                   <label className="flex items-center gap-2 cursor-pointer">
@@ -232,7 +232,7 @@ export default function AdminContentPage() {
               </div>
             </div>
             <div className="flex gap-3 mt-6">
-              <button onClick={save} disabled={saving} className="bg-amarillo text-tinta font-bold px-6 py-2.5 rounded-lg text-xs tracking-wider hover:bg-amarillo/80 transition-colors disabled:opacity-50">
+              <button onClick={save} disabled={saving} className="bg-amarillo text-tinta font-bold px-6 py-2.5 rounded-xl text-xs tracking-wider hover:bg-amarillo/80 transition-colors disabled:opacity-50">
                 {saving ? 'GUARDANDO...' : 'GUARDAR'}
               </button>
               <button onClick={() => setShowForm(false)} className="text-tinta/40 hover:text-tinta font-bold text-xs px-4 transition-colors">

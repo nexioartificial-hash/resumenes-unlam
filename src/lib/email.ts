@@ -36,6 +36,75 @@ function brandedHtml(title: string, body: string): string {
 </html>`
 }
 
+export async function sendRegistrationWelcomeEmail(opts: {
+  email: string
+}) {
+  if (!resend) return
+
+  const html = `<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Bienvenido a Resúmenes UNLaM</title>
+</head>
+<body style="margin:0;padding:0;background-color:#F2EFE6;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#F2EFE6;padding:40px 16px;">
+    <tr><td align="center">
+      <table width="100%" cellpadding="0" cellspacing="0" style="max-width:520px;">
+
+        <tr><td style="background-color:#0F3F26;border-radius:16px 16px 0 0;padding:36px 40px 32px;">
+          <table cellpadding="0" cellspacing="0">
+            <tr>
+              <td style="padding-right:10px;vertical-align:middle;">
+                <img src="https://resumenesunlam.site/logo-cropped.png" alt="Resúmenes UNLaM" width="44" height="44" style="display:block;filter:brightness(0) invert(1);"/>
+              </td>
+              <td style="vertical-align:middle;">
+                <span style="color:rgba(255,255,255,0.7);font-size:11px;font-weight:700;letter-spacing:0.25em;text-transform:uppercase;">ResumenesUNLaM</span>
+              </td>
+            </tr>
+          </table>
+          <div style="margin-top:28px;">
+            <p style="margin:0 0 4px;color:rgba(255,255,255,0.4);font-size:10px;font-weight:700;letter-spacing:0.25em;text-transform:uppercase;">BIENVENIDO/A</p>
+            <h1 style="margin:0;color:#ffffff;font-size:32px;font-weight:900;line-height:1;letter-spacing:-0.01em;">TU CUENTA<br/>ESTÁ LISTA</h1>
+          </div>
+          <div style="margin-top:24px;width:40px;height:3px;background-color:#F5D63E;border-radius:2px;"></div>
+        </td></tr>
+
+        <tr><td style="background-color:#ffffff;padding:36px 40px;">
+          <p style="margin:0 0 8px;color:#0A0A0A;font-size:16px;font-weight:600;line-height:1.5;">¡Ya podés empezar!</p>
+          <p style="margin:0 0 28px;color:rgba(10,10,10,0.55);font-size:15px;line-height:1.6;">
+            Tu cuenta en Resúmenes UNLaM fue creada con el email <strong>${opts.email}</strong>. Ingresá a la plataforma y comprá las materias que necesitás para el ingreso.
+          </p>
+          <table cellpadding="0" cellspacing="0" width="100%">
+            <tr><td align="center">
+              <a href="${APP_URL}/dashboard" style="display:inline-block;background-color:#0F3F26;color:#F2EFE6;font-size:13px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;text-decoration:none;padding:16px 40px;border-radius:12px;">
+                IR A MIS MATERIAS →
+              </a>
+            </td></tr>
+          </table>
+        </td></tr>
+
+        <tr><td style="background-color:#F2EFE6;border-radius:0 0 16px 16px;padding:24px 40px;border-top:1px solid rgba(10,10,10,0.06);">
+          <p style="margin:0;color:rgba(10,10,10,0.35);font-size:11px;line-height:1.6;text-align:center;">
+            Si no creaste esta cuenta, ignorá este email.
+          </p>
+        </td></tr>
+
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`
+
+  await resend.emails.send({
+    from:    FROM,
+    to:      opts.email,
+    subject: '¡Bienvenido/a a Resúmenes UNLaM! 🎓',
+    html,
+  })
+}
+
 export async function sendWelcomeEmail(opts: {
   email:       string
   full_name:   string

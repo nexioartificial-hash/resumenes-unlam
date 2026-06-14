@@ -68,7 +68,7 @@ export default function ChangePasswordPage() {
             required
             minLength={8}
             placeholder="Mínimo 8 caracteres"
-            className="w-full border border-tinta/20 rounded-lg px-4 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-verde focus:border-transparent"
+            className="w-full border border-tinta/20 rounded-xl px-4 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-verde focus:border-transparent"
           />
         </div>
 
@@ -82,7 +82,7 @@ export default function ChangePasswordPage() {
             onChange={e => setConfirm(e.target.value)}
             required
             placeholder="Repetí tu contraseña"
-            className="w-full border border-tinta/20 rounded-lg px-4 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-verde focus:border-transparent"
+            className="w-full border border-tinta/20 rounded-xl px-4 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-verde focus:border-transparent"
           />
         </div>
 
@@ -91,7 +91,7 @@ export default function ChangePasswordPage() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-amarillo text-tinta font-bold py-3 rounded-lg hover:bg-amarillo/90 transition-colors disabled:opacity-50"
+          className="w-full bg-amarillo text-tinta font-bold py-3 rounded-xl hover:bg-amarillo/90 transition-colors disabled:opacity-50"
         >
           {loading ? 'Guardando...' : 'GUARDAR CONTRASEÑA'}
         </button>
