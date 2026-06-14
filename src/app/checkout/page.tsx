@@ -2,43 +2,73 @@
 
 import { Suspense, useEffect, useState } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
+import { createBrowserClient } from '@supabase/ssr'
 
 interface Subject {
-  name: string
-  slug: string
-  price: number
-  available: boolean
+  name:        string
+  slug:        string
+  price:       number
+  available:   boolean
   description: string
-  benefit: string
-  department: string
+  benefit:     string
+  department:  string
 }
 
 function CheckoutContent() {
-  const params   = useSearchParams()
-  const router   = useRouter()
+  const params  = useSearchParams()
+  const router  = useRouter()
 
-  const email      = params.get('email')      ?? ''
-  const name       = params.get('name')       ?? ''
-  const slug       = params.get('subject')    ?? ''
-  const instagram  = params.get('instagram')  ?? ''
-  const contactId  = params.get('contact_id') ?? ''
+  const emailFromUrl   = params.get('email')      ?? ''
+  const nameFromUrl    = params.get('name')       ?? ''
+  const slugFromUrl    = params.get('subject')    ?? ''
+  const instagram      = params.get('instagram')  ?? ''
+  const contactId      = params.get('contact_id') ?? ''
 
+  const [email,   setEmail]   = useState(emailFromUrl)
+  const [name,    setName]    = useState(nameFromUrl)
+  const [slug,    setSlug]    = useState(slugFromUrl)
   const [subject, setSubject] = useState<Subject | null>(null)
   const [loading, setLoading] = useState(true)
   const [paying,  setPaying]  = useState(false)
   const [error,   setError]   = useState('')
 
   useEffect(() => {
-    if (!slug) { setLoading(false); return }
-    fetch('/api/subjects')
-      .then(r => r.json())
-      .then((subjects: Subject[]) => {
-        const found = subjects.find(s => s.slug === slug)
-        setSubject(found ?? null)
-        setLoading(false)
-      })
-      .catch(() => setLoading(false))
-  }, [slug])
+    async function init() {
+      let resolvedEmail = emailFromUrl
+      let resolvedName  = nameFromUrl
+      let resolvedSlug  = slugFromUrl
+
+      // Si no vienen email o slug por URL, leer de la sesión activa
+      if (!resolvedEmail || !resolvedSlug) {
+        const supabase = createBrowserClient(
+          process.env.NEXT_PUBLIC_SUPABASE_URL!,
+          process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+        )
+        const { data: { session } } = await supabase.auth.getSession()
+        if (session?.user) {
+          if (!resolvedEmail) resolvedEmail = session.user.email ?? ''
+          if (!resolvedName)  resolvedName  = session.user.user_metadata?.full_name ?? resolvedEmail
+        }
+      }
+
+      setEmail(resolvedEmail)
+      setName(resolvedName)
+      setSlug(resolvedSlug)
+
+      if (!resolvedSlug) { setLoading(false); return }
+
+      fetch('/api/subjects')
+        .then(r => r.json())
+        .then((subjects: Subject[]) => {
+          const found = subjects.find(s => s.slug === resolvedSlug)
+          setSubject(found ?? null)
+          setLoading(false)
+        })
+        .catch(() => setLoading(false))
+    }
+    init()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   async function handlePagar() {
     if (!subject || !email) return
@@ -50,10 +80,10 @@ function CheckoutContent() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         email,
-        full_name:              name || email,
-        subject_slug:           slug,
-        instagram_username:     instagram,
-        sendpulse_contact_id:   contactId,
+        full_name:            name || email,
+        subject_slug:         slug,
+        instagram_username:   instagram,
+        sendpulse_contact_id: contactId,
       }),
     })
 

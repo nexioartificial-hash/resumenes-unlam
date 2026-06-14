@@ -1,11 +1,14 @@
+import Link from 'next/link'
+
 interface LockedSubjectCardProps {
   name:  string
   color: string
+  slug:  string
 }
 
-export default function LockedSubjectCard({ name, color }: LockedSubjectCardProps) {
+export default function LockedSubjectCard({ name, color, slug }: LockedSubjectCardProps) {
   return (
-    <div className="rounded-2xl overflow-hidden border border-tinta/5 flex flex-col" style={{ opacity: 0.6 }}>
+    <div className="rounded-2xl overflow-hidden border border-tinta/5 flex flex-col" style={{ opacity: 0.85 }}>
 
       {/* Header de color — oscurecido */}
       <div
@@ -24,14 +27,12 @@ export default function LockedSubjectCard({ name, color }: LockedSubjectCardProp
       {/* Contenido inferior */}
       <div className="p-5 pt-4 flex flex-col flex-1 bg-white/70">
         <p className="text-[10px] font-bold text-tinta/30 tracking-wider mb-3">NO HABILITADA</p>
-        <a
-          href="https://instagram.com/resumenes.unlam"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="mt-auto w-full text-center bg-tinta/10 hover:bg-tinta/15 text-tinta/50 text-xs font-bold py-2 rounded-lg tracking-wider transition-colors block"
+        <Link
+          href={`/checkout?subject=${slug}`}
+          className="mt-auto w-full text-center bg-verde hover:bg-verde-claro text-crema text-xs font-bold py-2 rounded-xl tracking-wider transition-colors block"
         >
-          COMPRAR ACCESO
-        </a>
+          COMPRAR ACCESO →
+        </Link>
       </div>
 
     </div>

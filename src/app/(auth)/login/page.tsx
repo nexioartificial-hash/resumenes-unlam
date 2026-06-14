@@ -84,7 +84,7 @@ function TermsModal({ onClose }: { onClose: () => void }) {
             <h2 className="font-display text-tinta text-xl leading-tight mt-0.5">TÉRMINOS Y CONDICIONES</h2>
           </div>
           <button onClick={onClose} aria-label="Cerrar"
-            className="w-8 h-8 flex items-center justify-center rounded-lg text-tinta/30 hover:text-tinta hover:bg-tinta/8 transition-colors">
+            className="w-8 h-8 flex items-center justify-center rounded-xl text-tinta/30 hover:text-tinta hover:bg-tinta/8 transition-colors">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
               <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
             </svg>
@@ -110,7 +110,7 @@ function TermsModal({ onClose }: { onClose: () => void }) {
         </div>
         <div className="px-6 pb-6 pt-4 border-t border-tinta/8 shrink-0">
           <button onClick={onClose}
-            className="w-full bg-verde text-crema font-bold text-sm py-3 rounded-lg hover:bg-verde-claro transition-colors tracking-wider">
+            className="w-full bg-verde text-crema font-bold text-sm py-3 rounded-xl hover:bg-verde-claro transition-colors tracking-wider">
             ENTENDIDO
           </button>
         </div>
@@ -503,6 +503,14 @@ function LoginForm() {
                 Olvidé mi contraseña
               </Link>
             </div>
+
+            {/* Registro */}
+            <p className="mt-3 text-center text-[12px] text-tinta/35">
+              ¿No tenés cuenta?{' '}
+              <Link href="/register" className="text-verde font-semibold hover:underline underline-offset-2">
+                Registrate
+              </Link>
+            </p>
 
           </div>
         </div>

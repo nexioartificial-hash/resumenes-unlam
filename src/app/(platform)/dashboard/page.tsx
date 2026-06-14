@@ -137,6 +137,7 @@ export default async function DashboardPage() {
                 key={subject.id}
                 name={subject.name}
                 color={subject.color}
+                slug={subject.slug}
               />
             ))}
           </div>
@@ -157,7 +158,7 @@ export default async function DashboardPage() {
             href="https://instagram.com/resumenes.unlam"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-block bg-amarillo text-tinta font-bold px-6 py-3 rounded-lg tracking-wider hover:bg-amarillo/90 transition-colors"
+            className="inline-block bg-amarillo text-tinta font-bold px-6 py-3 rounded-xl tracking-wider hover:bg-amarillo/90 transition-colors"
           >
             IR A INSTAGRAM
           </a>
