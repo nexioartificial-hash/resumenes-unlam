@@ -1,7 +1,7 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
-const PUBLIC_ROUTES = ['/login', '/register', '/reset-password', '/checkout', '/auth/callback', '/api/auth', '/api/webhooks', '/api/checkout', '/api/subjects']
+const PUBLIC_ROUTES = ['/login', '/register', '/reset-password', '/checkout', '/auth/callback', '/api/auth', '/api/webhooks', '/api/checkout']
 const AUTH_ROUTES   = ['/login', '/register', '/reset-password']
 
 export async function middleware(request: NextRequest) {
@@ -26,7 +26,7 @@ export async function middleware(request: NextRequest) {
 
   const { data: { user } } = await supabase.auth.getUser()
   const pathname    = request.nextUrl.pathname
-  const isPublic    = PUBLIC_ROUTES.some(r => pathname.startsWith(r))
+  const isPublic    = PUBLIC_ROUTES.some(r => pathname.startsWith(r)) || pathname === '/api/subjects'
   const isAuthRoute = AUTH_ROUTES.some(r => pathname.startsWith(r))
 
   // Sin sesión → login

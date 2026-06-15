@@ -49,8 +49,8 @@ function RegisterForm() {
       setError('Las contraseñas no coinciden')
       return
     }
-    if (password.length < 6) {
-      setError('La contraseña debe tener al menos 6 caracteres')
+    if (password.length < 8) {
+      setError('La contraseña debe tener al menos 8 caracteres')
       return
     }
 
@@ -177,7 +177,7 @@ function RegisterForm() {
                   onBlur={() => setFocusedPassword(false)}
                   required
                   autoComplete="new-password"
-                  placeholder="Mínimo 6 caracteres"
+                  placeholder="Mínimo 8 caracteres"
                   className="w-full rounded-xl px-4 py-3.5 pr-11 text-sm bg-white transition-all duration-200"
                   style={inputStyle(focusedPassword)}
                 />

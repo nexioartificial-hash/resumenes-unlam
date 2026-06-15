@@ -35,13 +35,11 @@ export async function POST(req: NextRequest) {
   // ── Buscar o crear usuario ───────────────────────────────────────
   let userId:    string
   let isNewUser: boolean
-  let password:  string | null = null
 
-  const { data: existingUsers } = await supabase.auth.admin.listUsers()
-  const existingUser = existingUsers?.users?.find(u => u.email === email)
+  const { data: existingId } = await supabase.rpc('get_user_id_by_email', { user_email: email })
 
-  if (existingUser) {
-    userId    = existingUser.id
+  if (existingId) {
+    userId    = existingId as string
     isNewUser = false
 
     await supabase
@@ -50,7 +48,7 @@ export async function POST(req: NextRequest) {
       .eq('id', userId)
 
   } else {
-    password = crypto.randomUUID().slice(0, 16)
+    const password = crypto.randomUUID().slice(0, 16)
     const { data: newUser, error: createError } = await supabase.auth.admin.createUser({
       email,
       password,
@@ -112,7 +110,7 @@ export async function POST(req: NextRequest) {
     const { data: linkData } = await supabase.auth.admin.generateLink({
       type:    'recovery',
       email,
-      options: { redirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/change-password` },
+      options: { redirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/auth/callback?next=/change-password` },
     })
     resetLink = (linkData as { properties?: { action_link?: string } })?.properties?.action_link
       ?? `${process.env.NEXT_PUBLIC_APP_URL}/reset-password`
@@ -134,7 +132,6 @@ export async function POST(req: NextRequest) {
     user_id:          userId,
     is_new_user:      isNewUser,
     subjects_granted: grantedSubjects,
-    password,
     reset_link:       resetLink,
   })
 }

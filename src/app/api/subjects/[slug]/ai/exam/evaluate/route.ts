@@ -12,7 +12,9 @@ function verifyToken(
     if (!secret) return null
     const payload  = JSON.stringify({ correct_index: decoded.correct_index, explanation: decoded.explanation })
     const expected = crypto.createHmac('sha256', secret).update(question + payload).digest('hex')
-    if (decoded.sig !== expected) return null
+    try {
+      if (!crypto.timingSafeEqual(Buffer.from(decoded.sig, 'hex'), Buffer.from(expected, 'hex'))) return null
+    } catch { return null }
     return { correct_index: decoded.correct_index, explanation: decoded.explanation }
   } catch {
     return null
