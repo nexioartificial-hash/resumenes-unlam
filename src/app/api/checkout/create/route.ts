@@ -74,7 +74,7 @@ export async function POST(req: NextRequest) {
         failure: `${appUrl}/checkout/failure`,
         pending: `${appUrl}/checkout/pending`,
       },
-      auto_return:       'approved',
+      ...(appUrl.startsWith('https') ? { auto_return: 'approved' } : {}),
       notification_url:  `${appUrl}/api/webhooks/mercadopago`,
     }),
   })
@@ -85,6 +85,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Error al crear el pago' }, { status: 500 })
   }
 
-  const { init_point, id: preference_id } = await mpRes.json() as { init_point: string; id: string }
-  return NextResponse.json({ init_point, preference_id })
+  const { init_point, sandbox_init_point, id: preference_id } = await mpRes.json() as {
+    init_point: string; sandbox_init_point: string; id: string
+  }
+  const useSandbox = !appUrl.startsWith('https')
+  return NextResponse.json({ init_point: useSandbox ? sandbox_init_point : init_point, preference_id })
 }
