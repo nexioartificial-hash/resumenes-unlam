@@ -35,6 +35,8 @@ export async function GET(
     .select('answers')
     .eq('user_id', user.id)
     .eq('subject_id', subject.id)
+    .order('created_at', { ascending: false })
+    .limit(100)
 
   // Sin intentos previos → preguntas aleatorias como fallback
   if (!attempts || attempts.length === 0) {

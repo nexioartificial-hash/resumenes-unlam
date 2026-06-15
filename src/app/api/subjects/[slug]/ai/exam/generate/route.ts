@@ -7,9 +7,10 @@ import { checkRateLimit } from '@/lib/rateLimit'
 
 function signToken(correct_index: number, explanation: string, question: string): string {
   const secret  = process.env.WEBHOOK_SECRET ?? (() => { throw new Error('WEBHOOK_SECRET no configurado') })()
-  const payload = JSON.stringify({ correct_index, explanation })
+  const exp     = Math.floor(Date.now() / 1000) + 24 * 60 * 60
+  const payload = JSON.stringify({ correct_index, explanation, exp })
   const sig     = crypto.createHmac('sha256', secret).update(question + payload).digest('hex')
-  return Buffer.from(JSON.stringify({ correct_index, explanation, sig })).toString('base64url')
+  return Buffer.from(JSON.stringify({ correct_index, explanation, exp, sig })).toString('base64url')
 }
 
 export async function POST(

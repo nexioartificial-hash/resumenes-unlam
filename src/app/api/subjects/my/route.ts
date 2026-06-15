@@ -12,7 +12,7 @@ export async function GET() {
   // Todas las materias + cuáles tiene el usuario (activas y no vencidas)
   const { data: subjects } = await supabase
     .from('subjects')
-    .select('*')
+    .select('id, name, slug, price, available, description, benefit, department, order_index')
     .order('order_index')
 
   const { data: userSubjects } = await supabase

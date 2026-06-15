@@ -46,9 +46,10 @@ export async function POST(
     const opts          = row.options as { text: string; is_correct: boolean }[]
     const correct_index = opts.findIndex(o => o.is_correct)
     const explanation   = row.explanation ?? ''
-    const payload       = JSON.stringify({ correct_index, explanation })
+    const exp           = Math.floor(Date.now() / 1000) + 24 * 60 * 60
+    const payload       = JSON.stringify({ correct_index, explanation, exp })
     const sig           = crypto.createHmac('sha256', secret).update(row.question + payload).digest('hex')
-    const token         = Buffer.from(JSON.stringify({ correct_index, explanation, sig })).toString('base64url')
+    const token         = Buffer.from(JSON.stringify({ correct_index, explanation, exp, sig })).toString('base64url')
     return {
       question: row.question,
       options:  opts.map(o => o.text),

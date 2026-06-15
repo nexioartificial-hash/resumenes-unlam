@@ -51,13 +51,12 @@ export async function POST(request: NextRequest) {
 
   const response = NextResponse.json({
     user: {
-      id:             data.user.id,
-      email:          data.user.email,
-      full_name:      profile?.full_name,
-      is_admin:       profile?.is_admin ?? false,
+      id:               data.user.id,
+      email:            data.user.email,
+      full_name:        profile?.full_name,
+      is_admin:         profile?.is_admin ?? false,
       must_change_pass: profile?.must_change_pass ?? false,
     },
-    session_token: sessionToken,
   })
 
   // Guardar session_token en cookie httpOnly

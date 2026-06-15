@@ -10,7 +10,8 @@ function verifyToken(
     const decoded  = JSON.parse(Buffer.from(token, 'base64url').toString())
     const secret   = process.env.WEBHOOK_SECRET
     if (!secret) return null
-    const payload  = JSON.stringify({ correct_index: decoded.correct_index, explanation: decoded.explanation })
+    if (!decoded.exp || Math.floor(Date.now() / 1000) > decoded.exp) return null
+    const payload  = JSON.stringify({ correct_index: decoded.correct_index, explanation: decoded.explanation, exp: decoded.exp })
     const expected = crypto.createHmac('sha256', secret).update(question + payload).digest('hex')
     try {
       if (!crypto.timingSafeEqual(Buffer.from(decoded.sig, 'hex'), Buffer.from(expected, 'hex'))) return null
