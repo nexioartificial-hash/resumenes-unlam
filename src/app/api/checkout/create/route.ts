@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
   const supabase = createAdminClient()
   const { data: subject } = await supabase
     .from('subjects')
-    .select('name, price, available')
+    .select('id, name, price, available')
     .eq('slug', subject_slug)
     .single()
 
@@ -39,6 +39,18 @@ export async function POST(req: NextRequest) {
   }
   if (!subject.price) {
     return NextResponse.json({ error: 'Materia sin precio configurado' }, { status: 400 })
+  }
+
+  // Verificar si el usuario ya tiene acceso activo (evitar doble cobro)
+  const { data: existingUserId } = await supabase.rpc('get_user_id_by_email', { user_email: email })
+  if (existingUserId) {
+    const { data: existingAccess } = await supabase
+      .from('user_subjects').select('id')
+      .eq('user_id', existingUserId).eq('subject_id', subject.id)
+      .gt('expires_at', new Date().toISOString()).maybeSingle()
+    if (existingAccess) {
+      return NextResponse.json({ error: 'Ya tenés acceso activo a esta materia' }, { status: 400 })
+    }
   }
 
   // Codificar metadata en external_reference (base64 JSON)

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { sendAccessGrantedEmail } from '@/lib/email'
-import { createHmac } from 'crypto'
+import { createHmac, timingSafeEqual } from 'crypto'
 
 interface CheckoutMeta {
   email: string
@@ -32,7 +32,11 @@ async function verifySignature(req: NextRequest, rawBody: string): Promise<boole
 
   const manifest = `id:${dataId ?? ''};request-id:${xRequestId};ts:${ts};`
   const computed = createHmac('sha256', secret).update(manifest).digest('hex')
-  return computed === v1
+  try {
+    return timingSafeEqual(Buffer.from(computed, 'hex'), Buffer.from(v1, 'hex'))
+  } catch {
+    return false
+  }
 }
 
 export async function POST(req: NextRequest) {
@@ -62,13 +66,15 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: true })
   }
 
-  if (!paymentId) {
+  // Validar que paymentId sea numérico
+  if (!paymentId || !/^\d+$/.test(paymentId)) {
     return NextResponse.json({ ok: true })
   }
 
-  // Verificar el pago con MP
+  // Verificar el pago con MP (timeout 8s para no agotar Vercel)
   const mpRes = await fetch(`https://api.mercadopago.com/v1/payments/${paymentId}`, {
     headers: { 'Authorization': `Bearer ${process.env.MP_ACCESS_TOKEN}` },
+    signal: AbortSignal.timeout(8000),
   })
 
   if (!mpRes.ok) {
@@ -95,6 +101,10 @@ export async function POST(req: NextRequest) {
   }
 
   const { email, full_name, subject_slug, sendpulse_contact_id } = meta
+  if (!email || !subject_slug) {
+    console.error('[webhook/mp] external_reference sin email o subject_slug')
+    return NextResponse.json({ ok: true })
+  }
   const supabase = createAdminClient()
 
   // Buscar usuario existente (el checkout requiere cuenta previa)

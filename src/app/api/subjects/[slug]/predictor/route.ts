@@ -19,6 +19,12 @@ export async function GET(
     .from('subjects').select('id').eq('slug', slug).single()
   if (!subject) return NextResponse.json({ error: 'Materia no encontrada' }, { status: 404 })
 
+  const { data: access } = await supabase
+    .from('user_subjects').select('id')
+    .eq('user_id', user.id).eq('subject_id', subject.id)
+    .gt('expires_at', new Date().toISOString()).single()
+  if (!access) return NextResponse.json({ error: 'Sin acceso' }, { status: 403 })
+
   const { data: attempts } = await supabase
     .from('quiz_attempts')
     .select('score, total, attempted_at, answers')

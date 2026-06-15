@@ -5,7 +5,7 @@ import { NextRequest } from 'next/server'
 import crypto from 'crypto'
 
 function signToken(correct_index: number, explanation: string, question: string): string {
-  const secret  = process.env.WEBHOOK_SECRET || 'exam-dev-secret'
+  const secret  = process.env.WEBHOOK_SECRET ?? (() => { throw new Error('WEBHOOK_SECRET no configurado') })()
   const payload = JSON.stringify({ correct_index, explanation })
   const sig     = crypto.createHmac('sha256', secret).update(question + payload).digest('hex')
   return Buffer.from(JSON.stringify({ correct_index, explanation, sig })).toString('base64url')

@@ -25,6 +25,12 @@ export async function GET(
     .single()
   if (!subject) return Response.json([])
 
+  const { data: access } = await supabase
+    .from('user_subjects').select('id')
+    .eq('user_id', user.id).eq('subject_id', subject.id)
+    .gt('expires_at', new Date().toISOString()).single()
+  if (!access) return Response.json([], { status: 403 })
+
   const sb = serviceClient()
 
   const { data: conv } = await sb
@@ -62,6 +68,12 @@ export async function DELETE(
     .eq('slug', slug)
     .single()
   if (!subject) return new Response('No encontrado', { status: 404 })
+
+  const { data: access } = await supabase
+    .from('user_subjects').select('id')
+    .eq('user_id', user.id).eq('subject_id', subject.id)
+    .gt('expires_at', new Date().toISOString()).single()
+  if (!access) return new Response('Sin acceso', { status: 403 })
 
   const sb = serviceClient()
   await sb
