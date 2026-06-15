@@ -180,6 +180,7 @@ function LoginForm() {
     e.preventDefault()
     setError('')
     setLoading(true)
+    let navigating = false
     try {
       const res  = await fetch('/api/auth/login', {
         method: 'POST',
@@ -188,11 +189,12 @@ function LoginForm() {
       })
       const data = await res.json()
       if (!res.ok) { setError(data.error ?? 'Error al ingresar'); return }
+      navigating = true
       router.push(data.user.must_change_pass ? '/change-password' : '/dashboard')
     } catch {
       setError('Error de conexión. Intentá de nuevo.')
     } finally {
-      setLoading(false)
+      if (!navigating) setLoading(false)
     }
   }
 
