@@ -29,6 +29,16 @@ export async function POST(request: NextRequest) {
 
   if (!subject) return NextResponse.json({ error: 'Materia no encontrada' }, { status: 404 })
 
+  // Verificar acceso pagado y vigente
+  const { data: access } = await supabase
+    .from('user_subjects')
+    .select('id')
+    .eq('user_id', user.id)
+    .eq('subject_id', subject.id)
+    .gt('expires_at', new Date().toISOString())
+    .single()
+  if (!access) return NextResponse.json({ error: 'Sin acceso a esta materia' }, { status: 403 })
+
   // Obtener preguntas con respuestas correctas (server-side)
   const questionIds = answers.map(a => a.question_id)
   const { data: questions } = await supabase

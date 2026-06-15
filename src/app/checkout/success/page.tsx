@@ -21,7 +21,7 @@ function SuccessContent() {
   const redirectTo = subjectSlug ? `/dashboard/${subjectSlug}` : '/dashboard'
 
   useEffect(() => {
-    if (status !== 'approved' && status !== null && status !== '') return
+    if (status !== 'approved') return
     const t = setTimeout(() => router.push(redirectTo), 2500)
     return () => clearTimeout(t)
   }, [status, router, redirectTo])

@@ -22,10 +22,21 @@ export async function POST(
   req: NextRequest,
   { params }: { params: Promise<{ slug: string }> }
 ) {
-  const { slug: _slug } = await params
+  const { slug } = await params
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return Response.json({ error: 'No autorizado' }, { status: 401 })
+
+  // Verificar acceso pagado y vigente
+  const { data: subject } = await supabase
+    .from('subjects').select('id').eq('slug', slug).single()
+  if (!subject) return Response.json({ error: 'Materia no encontrada' }, { status: 404 })
+
+  const { data: access } = await supabase
+    .from('user_subjects').select('id')
+    .eq('user_id', user.id).eq('subject_id', subject.id)
+    .gt('expires_at', new Date().toISOString()).single()
+  if (!access) return Response.json({ error: 'Sin acceso a esta materia' }, { status: 403 })
 
   const { question, selected_index, token } = await req.json()
 

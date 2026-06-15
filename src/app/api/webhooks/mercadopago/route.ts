@@ -12,7 +12,7 @@ interface CheckoutMeta {
 
 async function verifySignature(req: NextRequest, rawBody: string): Promise<boolean> {
   const secret = process.env.MP_WEBHOOK_SECRET
-  if (!secret) return true // si no hay secret configurado, no bloquear
+  if (!secret) return false // sin secret configurado, rechazar todo
 
   const xSignature = req.headers.get('x-signature')
   const xRequestId = req.headers.get('x-request-id')
@@ -98,7 +98,9 @@ export async function POST(req: NextRequest) {
   const supabase = createAdminClient()
 
   // Buscar usuario existente (el checkout requiere cuenta previa)
-  const { data: userId } = await supabase.rpc('get_user_id_by_email', { user_email: email })
+  const { data: userId, error: rpcError } = await supabase.rpc('get_user_id_by_email', { user_email: email })
+
+  if (rpcError) console.error('[webhook/mp] RPC error:', rpcError.message)
 
   if (!userId) {
     console.error('[webhook/mp] Usuario no encontrado:', email)
@@ -114,19 +116,21 @@ export async function POST(req: NextRequest) {
   const { data: subject } = await supabase
     .from('subjects').select('id, name').eq('slug', subject_slug).single()
 
-  if (subject) {
-    const expiresAt = new Date()
-    expiresAt.setFullYear(expiresAt.getFullYear() + 1)
-    await supabase.from('user_subjects').upsert(
-      { user_id: userId, subject_id: subject.id, expires_at: expiresAt.toISOString() },
-      { onConflict: 'user_id,subject_id' }
-    )
+  if (!subject) {
+    console.error('[webhook/mp] Subject no encontrado:', subject_slug)
+    return NextResponse.json({ ok: true })
   }
+
+  const expiresAt = new Date()
+  expiresAt.setFullYear(expiresAt.getFullYear() + 1)
+  await supabase.from('user_subjects').upsert(
+    { user_id: userId, subject_id: subject.id, expires_at: expiresAt.toISOString() },
+    { onConflict: 'user_id,subject_id' }
+  )
 
   // Email de confirmación de compra
   try {
-    const subjects = subject ? [subject.name] : []
-    await sendAccessGrantedEmail({ email, full_name, subjects })
+    await sendAccessGrantedEmail({ email, full_name, subjects: [subject.name] })
   } catch { /* no bloquea */ }
 
   console.log(`[webhook/mp] ✅ Acceso otorgado: ${email} → ${subject_slug}`)
