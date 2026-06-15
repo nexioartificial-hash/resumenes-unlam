@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
-import { sendWelcomeEmail, sendAccessGrantedEmail } from '@/lib/email'
+import { sendAccessGrantedEmail } from '@/lib/email'
 import { createHmac } from 'crypto'
 
 interface CheckoutMeta {
@@ -97,42 +97,20 @@ export async function POST(req: NextRequest) {
   const { email, full_name, subject_slug, sendpulse_contact_id } = meta
   const supabase = createAdminClient()
 
-  // Buscar o crear usuario (idempotente)
-  let userId: string
-  let isNewUser: boolean
+  // Buscar usuario existente (el checkout requiere cuenta previa)
+  const { data: userId } = await supabase.rpc('get_user_id_by_email', { user_email: email })
 
-  const { data: existingId } = await supabase.rpc('get_user_id_by_email', { user_email: email })
-
-  if (existingId) {
-    userId    = existingId as string
-    isNewUser = false
-    await supabase.from('profiles')
-      .upsert({
-        id: userId,
-        full_name,
-        sendpulse_contact_id: sendpulse_contact_id || null,
-        must_change_pass: false,
-        is_admin: false,
-      }, { onConflict: 'id' })
-  } else {
-    const password = crypto.randomUUID().slice(0, 16)
-    const { data: newUser, error } = await supabase.auth.admin.createUser({
-      email, password, email_confirm: true,
-    })
-    if (error || !newUser.user) {
-      console.error('[webhook/mp] Error creando usuario:', error)
-      return NextResponse.json({ ok: true })
-    }
-    userId    = newUser.user.id
-    isNewUser = true
-    await supabase.from('profiles').upsert({
-      id: userId, full_name,
-      sendpulse_contact_id: sendpulse_contact_id || null,
-      must_change_pass: false, is_admin: false,
-    })
+  if (!userId) {
+    console.error('[webhook/mp] Usuario no encontrado:', email)
+    return NextResponse.json({ ok: true })
   }
 
-  // Otorgar acceso a la materia
+  await supabase.from('profiles').upsert(
+    { id: userId, full_name, sendpulse_contact_id: sendpulse_contact_id || null },
+    { onConflict: 'id' }
+  )
+
+  // Otorgar acceso a la materia por 1 año
   const { data: subject } = await supabase
     .from('subjects').select('id, name').eq('slug', subject_slug).single()
 
@@ -145,45 +123,11 @@ export async function POST(req: NextRequest) {
     )
   }
 
-  // Generar reset_link para nuevos usuarios
-  let resetLink: string | null = null
-  if (isNewUser) {
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://resumenesunlam.site'
-    const { data: linkData } = await supabase.auth.admin.generateLink({
-      type: 'recovery', email,
-      options: { redirectTo: `${appUrl}/change-password` },
-    })
-    resetLink = (linkData as { properties?: { action_link?: string } })?.properties?.action_link
-      ?? `${appUrl}/reset-password`
-  }
-
-  // Email (opcional)
+  // Email de confirmación de compra
   try {
     const subjects = subject ? [subject.name] : []
-    if (isNewUser && resetLink) {
-      await sendWelcomeEmail({ email, full_name, subjects, reset_link: resetLink })
-    } else if (!isNewUser) {
-      await sendAccessGrantedEmail({ email, full_name, subjects })
-    }
+    await sendAccessGrantedEmail({ email, full_name, subjects })
   } catch { /* no bloquea */ }
-
-  // Enviar DM de bienvenida via n8n
-  const contactIdForDm = sendpulse_contact_id || null
-  if (contactIdForDm && isNewUser && resetLink) {
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://resumenesunlam.site'
-    const dmMessage =
-      `¡Bienvenido/a a Resúmenes UNLaM!\n\n` +
-      `Configurá tu contraseña y accedé a la plataforma:\n${resetLink}\n\n` +
-      `Tu email de acceso: ${email}\n` +
-      `Web: ${appUrl}`
-    try {
-      await fetch('https://n8n.nexioagency.online/webhook/bienvenida-mp', {
-        method:  'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ contact_id: contactIdForDm, message: dmMessage }),
-      })
-    } catch { /* DM falla sin interrumpir */ }
-  }
 
   console.log(`[webhook/mp] ✅ Acceso otorgado: ${email} → ${subject_slug}`)
   return NextResponse.json({ ok: true })
