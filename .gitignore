@@ -43,8 +43,27 @@ yarn-error.log*
 
 # Claude / superpowers tooling
 .superpowers/
+.agents/
+.claude/
+.playwright-mcp/
+skills-lock.json
 .mcp.json
 PLAN.md
+docs/superpowers/
+
+# Imágenes y txt de debugging en root
+/*.png
+/*.txt
+
+# Python
+scripts/__pycache__/
+**/__pycache__/
+*.pyc
+scripts/_transcriptions.json
+scripts/_debug_img.py
+
+# OCR binaries
+tessdata/
 
 # Credenciales locales — nunca commitear
 .secrets.md

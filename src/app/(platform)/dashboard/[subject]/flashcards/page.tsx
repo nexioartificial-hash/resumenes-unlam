@@ -261,21 +261,21 @@ export default function FlashcardsPage() {
               className="flex-1 bg-rojo/10 text-rojo font-bold text-xs py-3 rounded-xl tracking-wider hover:bg-rojo/20 transition-colors border border-rojo/20"
             >
               🔴 NO LO SABÍA
-              <span className="block text-rojo/60 font-normal mt-0.5">Vuelve mañana</span>
+              <span className="block text-rojo/60 font-normal mt-0.5">Reinicia el intervalo</span>
             </button>
             <button
               onClick={() => handleQuality(3)}
               className="flex-1 bg-amarillo/10 text-amarillo font-bold text-xs py-3 rounded-xl tracking-wider hover:bg-amarillo/20 transition-colors border border-amarillo/20"
             >
               🟡 DUDÉ
-              <span className="block text-amarillo/60 font-normal mt-0.5">Vuelve en 6 días</span>
+              <span className="block text-amarillo/60 font-normal mt-0.5">Progresa despacio</span>
             </button>
             <button
               onClick={() => handleQuality(5)}
               className="flex-1 bg-verde/10 text-verde font-bold text-xs py-3 rounded-xl tracking-wider hover:bg-verde/20 transition-colors border border-verde/20"
             >
               🟢 LO SABÍA
-              <span className="block text-verde/60 font-normal mt-0.5">Intervalo × 2.5</span>
+              <span className="block text-verde/60 font-normal mt-0.5">Intervalo máximo</span>
             </button>
           </div>
         )}
