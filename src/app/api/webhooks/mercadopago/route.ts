@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { sendWelcomeEmail, sendAccessGrantedEmail } from '@/lib/email'
+import { createHmac } from 'crypto'
 
 interface CheckoutMeta {
   email: string
@@ -9,7 +10,38 @@ interface CheckoutMeta {
   sendpulse_contact_id?: string
 }
 
+async function verifySignature(req: NextRequest, rawBody: string): Promise<boolean> {
+  const secret = process.env.MP_WEBHOOK_SECRET
+  if (!secret) return true // si no hay secret configurado, no bloquear
+
+  const xSignature = req.headers.get('x-signature')
+  const xRequestId = req.headers.get('x-request-id')
+  if (!xSignature || !xRequestId) return false
+
+  const url    = new URL(req.url)
+  const dataId = url.searchParams.get('data.id') ?? url.searchParams.get('id')
+
+  const parts: Record<string, string> = {}
+  for (const part of xSignature.split(',')) {
+    const [k, v] = part.split('=')
+    if (k && v) parts[k.trim()] = v.trim()
+  }
+  const ts = parts['ts']
+  const v1 = parts['v1']
+  if (!ts || !v1) return false
+
+  const manifest = `id:${dataId ?? ''};request-id:${xRequestId};ts:${ts};`
+  const computed = createHmac('sha256', secret).update(manifest).digest('hex')
+  return computed === v1
+}
+
 export async function POST(req: NextRequest) {
+  const rawBody = await req.text()
+
+  if (!(await verifySignature(req, rawBody))) {
+    return NextResponse.json({ error: 'Firma inválida' }, { status: 401 })
+  }
+
   // MP envía el payment_id como query param o en el body
   const url    = new URL(req.url)
   const topic  = url.searchParams.get('topic') ?? url.searchParams.get('type')
@@ -20,7 +52,7 @@ export async function POST(req: NextRequest) {
   // También puede venir en el body JSON
   if (!paymentId) {
     try {
-      const body = await req.json() as { action?: string; data?: { id?: string } }
+      const body = JSON.parse(rawBody) as { action?: string; data?: { id?: string } }
       if (body?.data?.id) paymentId = String(body.data.id)
     } catch { /* body vacío */ }
   }
