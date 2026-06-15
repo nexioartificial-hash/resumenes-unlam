@@ -74,8 +74,8 @@ export async function middleware(request: NextRequest) {
       }
     }
 
-    // Admin: verificar is_admin para rutas /admin
-    if (pathname.startsWith('/admin')) {
+    // Admin: verificar is_admin para rutas /admin y /api/admin
+    if (pathname.startsWith('/admin') || pathname.startsWith('/api/admin')) {
       const { data: profile } = await supabase
         .from('profiles')
         .select('is_admin')

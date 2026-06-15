@@ -52,6 +52,15 @@ export async function POST(
     .single()
   if (!access) return NextResponse.json({ error: 'Sin acceso' }, { status: 403 })
 
+  // Verificar que la pregunta pertenece a la materia (evita actualizar flashcards de otras materias)
+  const { data: question } = await supabase
+    .from('quiz_questions')
+    .select('id')
+    .eq('id', body.question_id)
+    .eq('subject_id', subject.id)
+    .single()
+  if (!question) return NextResponse.json({ error: 'Pregunta no encontrada' }, { status: 404 })
+
   const { data: existing } = await supabase
     .from('flashcard_reviews')
     .select('id, ease_factor, interval_days, repetitions')

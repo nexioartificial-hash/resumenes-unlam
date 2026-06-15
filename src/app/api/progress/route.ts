@@ -16,8 +16,26 @@ export async function POST(request: NextRequest) {
 
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
-
   if (!user) return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
+
+  // Verificar que el content_item pertenece a una materia con acceso activo
+  const { data: item } = await supabase
+    .from('content_items')
+    .select('subject_id')
+    .eq('id', parsed.data.content_item_id)
+    .single()
+
+  if (!item) return NextResponse.json({ error: 'Item no encontrado' }, { status: 404 })
+
+  const { data: access } = await supabase
+    .from('user_subjects')
+    .select('id')
+    .eq('user_id', user.id)
+    .eq('subject_id', item.subject_id)
+    .gt('expires_at', new Date().toISOString())
+    .single()
+
+  if (!access) return NextResponse.json({ error: 'Sin acceso a esta materia' }, { status: 403 })
 
   await supabase
     .from('user_progress')
@@ -36,7 +54,6 @@ export async function DELETE(request: NextRequest) {
 
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
-
   if (!user) return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
 
   await supabase
