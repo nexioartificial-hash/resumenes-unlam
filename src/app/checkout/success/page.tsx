@@ -1,19 +1,30 @@
 'use client'
 
-import { Suspense } from 'react'
-import { useSearchParams } from 'next/navigation'
+import { Suspense, useEffect } from 'react'
+import { useSearchParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 
 function SuccessContent() {
   const params            = useSearchParams()
+  const router            = useRouter()
   const externalReference = params.get('external_reference') ?? ''
   const status            = params.get('status')
 
   let email: string | null = null
+  let subjectSlug: string | null = null
   try {
-    const meta = JSON.parse(atob(externalReference)) as { email: string }
-    email = meta.email ?? null
+    const meta = JSON.parse(atob(externalReference)) as { email: string; subject_slug: string }
+    email       = meta.email        ?? null
+    subjectSlug = meta.subject_slug ?? null
   } catch { /* ok */ }
+
+  const redirectTo = subjectSlug ? `/dashboard/${subjectSlug}` : '/dashboard'
+
+  useEffect(() => {
+    if (status !== 'approved' && status !== null && status !== '') return
+    const t = setTimeout(() => router.push(redirectTo), 2500)
+    return () => clearTimeout(t)
+  }, [status, router, redirectTo])
 
   if (status === 'failure') {
     return (
@@ -59,7 +70,7 @@ function SuccessContent() {
         <p className="text-5xl mb-4">🎉</p>
         <h1 className="text-2xl font-bold text-tinta mb-2">¡Pago confirmado!</h1>
         <p className="text-tinta/60 text-sm mb-6">
-          Tu acceso se está activando. En unos segundos la materia aparece habilitada en tu dashboard.
+          Tu acceso ya está activo. Te redirigimos a la materia en un momento...
         </p>
 
         {email && (
@@ -70,7 +81,7 @@ function SuccessContent() {
         )}
 
         <Link
-          href="/dashboard"
+          href={redirectTo}
           className="block w-full bg-verde text-crema font-bold py-3 rounded-xl hover:bg-verde-claro transition-colors text-sm tracking-wider"
         >
           IR A MIS MATERIAS →
