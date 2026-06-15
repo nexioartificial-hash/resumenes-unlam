@@ -3,6 +3,7 @@ import { generateText } from 'ai'
 import { createClient } from '@/lib/supabase/server'
 import { NextRequest } from 'next/server'
 import crypto from 'crypto'
+import { checkRateLimit } from '@/lib/rateLimit'
 
 function signToken(correct_index: number, explanation: string, question: string): string {
   const secret  = process.env.WEBHOOK_SECRET ?? (() => { throw new Error('WEBHOOK_SECRET no configurado') })()
@@ -42,6 +43,14 @@ export async function POST(
     .gt('expires_at', new Date().toISOString())
     .single()
   if (!access) return Response.json({ error: 'Sin acceso' }, { status: 403 })
+
+  const { allowed } = await checkRateLimit(user.id, 'exam')
+  if (!allowed) {
+    return Response.json(
+      { error: 'Límite de generaciones alcanzado. Podés generar hasta 10 preguntas por hora.' },
+      { status: 429, headers: { 'X-RateLimit-Remaining': '0', 'Retry-After': '3600' } }
+    )
+  }
 
   const { data: items } = await supabase
     .from('content_items')

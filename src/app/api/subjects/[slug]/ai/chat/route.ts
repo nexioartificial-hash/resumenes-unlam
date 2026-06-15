@@ -3,6 +3,7 @@ import { streamText } from 'ai'
 import { createClient } from '@/lib/supabase/server'
 import { createClient as createServiceClient } from '@supabase/supabase-js'
 import { NextRequest } from 'next/server'
+import { checkRateLimit } from '@/lib/rateLimit'
 
 function sb() {
   return createServiceClient(
@@ -61,6 +62,14 @@ export async function POST(
     .gt('expires_at', new Date().toISOString())
     .single()
   if (!access) return new Response('Sin acceso', { status: 403 })
+
+  const { allowed } = await checkRateLimit(user.id, 'chat')
+  if (!allowed) {
+    return Response.json(
+      { error: 'Límite de mensajes alcanzado. Podés enviar hasta 30 mensajes por hora.' },
+      { status: 429, headers: { 'X-RateLimit-Remaining': '0', 'Retry-After': '3600' } }
+    )
+  }
 
   // ── Paralelizar: embed + historial + módulos al mismo tiempo ─────────────
   const client = sb()
