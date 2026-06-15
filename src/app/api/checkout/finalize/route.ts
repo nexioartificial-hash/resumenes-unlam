@@ -109,7 +109,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'external_reference inválido' }, { status: 400 })
   }
 
-  const { resetLink } = await grantAccess(meta)
+  await grantAccess(meta)
 
-  return NextResponse.json({ status: 'approved', reset_link: resetLink })
+  return NextResponse.json({ status: 'approved' })
 }
