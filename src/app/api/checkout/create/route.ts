@@ -87,7 +87,7 @@ export async function POST(req: NextRequest) {
         pending: `${appUrl}/checkout/success`,
       },
       ...(appUrl.startsWith('https') ? { auto_return: 'approved' } : {}),
-      notification_url:  `${appUrl}/api/webhooks/mercadopago`,
+      notification_url:  `https://resumenesunlam.site/api/webhooks/mercadopago`,
     }),
   })
 

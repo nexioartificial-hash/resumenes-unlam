@@ -3,9 +3,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import { sendWelcomeEmail, sendAccessGrantedEmail } from '@/lib/email'
 
 interface CheckoutMeta {
-  email: string
-  full_name: string
-  subject_slug: string
+  email:              string
+  full_name:          string
+  subject_slug:       string
   instagram_username: string
 }
 
@@ -13,22 +13,20 @@ async function grantAccess(meta: CheckoutMeta) {
   const { email, full_name, subject_slug, instagram_username } = meta
   const supabase = createAdminClient()
 
-  // Buscar o crear usuario
+  // Buscar usuario existente via RPC (evita listUsers() sin paginación)
   let userId: string
   let isNewUser: boolean
-  let password: string | null = null
 
-  const { data: existingUsers } = await supabase.auth.admin.listUsers()
-  const existing = existingUsers?.users?.find(u => u.email === email)
+  const { data: existingId } = await supabase.rpc('get_user_id_by_email', { user_email: email })
 
-  if (existing) {
-    userId    = existing.id
+  if (existingId) {
+    userId    = existingId as string
     isNewUser = false
     await supabase.from('profiles')
       .update({ full_name, instagram_username: instagram_username || null })
       .eq('id', userId)
   } else {
-    password = crypto.randomUUID().slice(0, 16)
+    const password = crypto.randomUUID().slice(0, 16)
     const { data: newUser, error } = await supabase.auth.admin.createUser({
       email, password, email_confirm: true,
     })
@@ -61,7 +59,7 @@ async function grantAccess(meta: CheckoutMeta) {
     const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://resumenesunlam.site'
     const { data: linkData } = await supabase.auth.admin.generateLink({
       type: 'recovery', email,
-      options: { redirectTo: `${appUrl}/change-password` },
+      options: { redirectTo: `${appUrl}/auth/callback?next=/change-password` },
     })
     resetLink = (linkData as { properties?: { action_link?: string } })?.properties?.action_link
       ?? `${appUrl}/reset-password`
@@ -77,22 +75,20 @@ async function grantAccess(meta: CheckoutMeta) {
     }
   } catch { /* email falla sin interrumpir */ }
 
-  return { userId, isNewUser, resetLink, password }
+  return { userId, isNewUser, resetLink }
 }
 
 export async function POST(req: NextRequest) {
-  const { payment_id, external_reference } = await req.json() as {
-    payment_id: string
-    external_reference: string
-  }
+  const { payment_id } = await req.json() as { payment_id?: string }
 
-  if (!payment_id || !external_reference) {
-    return NextResponse.json({ error: 'Faltan datos' }, { status: 400 })
+  if (!payment_id || !/^\d+$/.test(String(payment_id))) {
+    return NextResponse.json({ error: 'payment_id inválido' }, { status: 400 })
   }
 
   // Verificar pago con MP
   const mpRes = await fetch(`https://api.mercadopago.com/v1/payments/${payment_id}`, {
     headers: { 'Authorization': `Bearer ${process.env.MP_ACCESS_TOKEN}` },
+    signal: AbortSignal.timeout(8000),
   })
 
   if (!mpRes.ok) {
@@ -105,10 +101,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ status: payment.status })
   }
 
-  // Decodificar metadata
+  // Decodificar metadata desde la respuesta de MP (no del body del request)
   let meta: CheckoutMeta
   try {
-    meta = JSON.parse(Buffer.from(external_reference, 'base64').toString('utf8'))
+    meta = JSON.parse(Buffer.from(payment.external_reference, 'base64').toString('utf8'))
   } catch {
     return NextResponse.json({ error: 'external_reference inválido' }, { status: 400 })
   }

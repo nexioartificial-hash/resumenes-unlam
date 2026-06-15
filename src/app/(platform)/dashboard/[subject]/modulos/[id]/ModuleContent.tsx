@@ -6,8 +6,13 @@ import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 
 interface Question {
-  question:      string
-  options:       string[]
+  question: string
+  options:  string[]
+  token:    string
+}
+
+interface EvalResult {
+  is_correct:    boolean
   correct_index: number
   explanation:   string
 }
@@ -70,6 +75,8 @@ export default function ModuleContent({
   const [current,     setCurrent]     = useState(0)
   const [selected,    setSelected]    = useState<number | null>(null)
   const [answered,    setAnswered]    = useState(false)
+  const [evaluating,  setEvaluating]  = useState(false)
+  const [evalResult,  setEvalResult]  = useState<EvalResult | null>(null)
   const [score,       setScore]       = useState(0)
 
   const sectionRefs = useRef<Record<string, HTMLElement | null>>({})
@@ -101,7 +108,7 @@ export default function ModuleContent({
     const data = await res.json()
     setQuestions(data.questions)
     setModuleTitle(data.module_title)
-    setCurrent(0); setSelected(null); setAnswered(false); setScore(0)
+    setCurrent(0); setSelected(null); setAnswered(false); setEvalResult(null); setScore(0)
     setPhase('quiz')
   }
 
@@ -112,20 +119,36 @@ export default function ModuleContent({
     const data = await res.json()
     setQuestions(data.questions)
     setModuleTitle(data.module_title)
-    setCurrent(0); setSelected(null); setAnswered(false); setScore(0)
+    setCurrent(0); setSelected(null); setAnswered(false); setEvalResult(null); setScore(0)
     setPhase('quiz')
   }
 
-  function answer(idx: number) {
-    if (answered) return
+  async function answer(idx: number) {
+    if (answered || evaluating) return
     setSelected(idx)
-    setAnswered(true)
-    if (idx === questions[current].correct_index) setScore(s => s + 1)
+    setEvaluating(true)
+    try {
+      const q   = questions[current]
+      const res = await fetch(`/api/subjects/${slug}/modules/${moduleId}/quiz/evaluate`, {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ question: q.question, selected_index: idx, token: q.token }),
+      })
+      const result: EvalResult = await res.json()
+      setEvalResult(result)
+      setAnswered(true)
+      if (result.is_correct) setScore(s => s + 1)
+    } catch {
+      // Fallback: marcar como respondido sin mostrar resultado
+      setAnswered(true)
+    } finally {
+      setEvaluating(false)
+    }
   }
 
   function next() {
     if (current + 1 < questions.length) {
-      setCurrent(c => c + 1); setSelected(null); setAnswered(false)
+      setCurrent(c => c + 1); setSelected(null); setAnswered(false); setEvalResult(null)
     } else {
       setPhase('results')
     }
@@ -176,22 +199,23 @@ export default function ModuleContent({
           <div className="space-y-3">
             {q.options.map((opt, i) => {
               let cls = 'border-tinta/20 text-tinta/80 hover:border-verde hover:bg-verde/5'
-              if (answered) {
-                if (i === q.correct_index)   cls = 'border-verde bg-verde/10 text-verde font-bold'
-                else if (i === selected)      cls = 'border-rojo bg-rojo/10 text-rojo'
-                else                         cls = 'border-tinta/10 text-tinta/40'
-              } else if (selected === i)    cls = 'border-verde bg-verde/10 text-verde'
+              if (evaluating && i === selected) cls = 'border-amarillo bg-amarillo/10 text-amarillo animate-pulse'
+              else if (answered && evalResult) {
+                if (i === evalResult.correct_index) cls = 'border-verde bg-verde/10 text-verde font-bold'
+                else if (i === selected)            cls = 'border-rojo bg-rojo/10 text-rojo'
+                else                               cls = 'border-tinta/10 text-tinta/40'
+              } else if (selected === i) cls = 'border-verde bg-verde/10 text-verde'
               return (
-                <button key={i} onClick={() => answer(i)} disabled={answered}
+                <button key={i} onClick={() => answer(i)} disabled={answered || evaluating}
                   className={`w-full text-left px-4 py-3 rounded-xl border-2 text-sm transition-all ${cls}`}>
                   <span className="font-bold mr-2">{['A','B','C','D'][i]}.</span>{opt}
                 </button>
               )
             })}
           </div>
-          {answered && (
+          {answered && evalResult?.explanation && (
             <div className="mt-4 bg-tinta/5 rounded-xl px-4 py-3">
-              <p className="text-xs text-tinta/60">{q.explanation}</p>
+              <p className="text-xs text-tinta/60">{evalResult.explanation}</p>
             </div>
           )}
         </div>

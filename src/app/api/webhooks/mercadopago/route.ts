@@ -131,6 +131,19 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: true })
   }
 
+  // Idempotencia: si el acceso fue otorgado en las últimas 24h (expires_at > 11 meses), ya está procesado
+  const elevenMonthsFromNow = new Date()
+  elevenMonthsFromNow.setMonth(elevenMonthsFromNow.getMonth() + 11)
+  const { data: recentAccess } = await supabase
+    .from('user_subjects').select('id')
+    .eq('user_id', userId).eq('subject_id', subject.id)
+    .gt('expires_at', elevenMonthsFromNow.toISOString()).maybeSingle()
+
+  if (recentAccess) {
+    console.log(`[webhook/mp] Acceso ya otorgado recientemente para ${email} → ${subject_slug}`)
+    return NextResponse.json({ ok: true })
+  }
+
   const expiresAt = new Date()
   expiresAt.setFullYear(expiresAt.getFullYear() + 1)
   await supabase.from('user_subjects').upsert(

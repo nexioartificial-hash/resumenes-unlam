@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { NextRequest, NextResponse } from 'next/server'
+import crypto from 'crypto'
 
 export async function POST(
   _req: NextRequest,
@@ -20,8 +21,9 @@ export async function POST(
     .gt('expires_at', new Date().toISOString()).single()
   if (!access) return NextResponse.json({ error: 'Sin acceso' }, { status: 403 })
 
+  // Verificar que el módulo pertenece a la materia del slug
   const { data: module_ } = await supabase
-    .from('modules').select('title').eq('id', moduleId).single()
+    .from('modules').select('title').eq('id', moduleId).eq('subject_id', subject.id).single()
   if (!module_) return NextResponse.json({ error: 'Módulo no encontrado' }, { status: 404 })
 
   const { data: rows } = await supabase
@@ -34,17 +36,27 @@ export async function POST(
   if (!rows || rows.length === 0)
     return NextResponse.json({ error: 'No hay preguntas para este módulo' }, { status: 404 })
 
+  const secret = process.env.WEBHOOK_SECRET
+  if (!secret) {
+    console.error('[modules/quiz] WEBHOOK_SECRET no configurado')
+    return NextResponse.json({ error: 'Error de configuración' }, { status: 500 })
+  }
+
   const questions = rows.map(row => {
-    const opts = row.options as { text: string; is_correct: boolean }[]
+    const opts          = row.options as { text: string; is_correct: boolean }[]
+    const correct_index = opts.findIndex(o => o.is_correct)
+    const explanation   = row.explanation ?? ''
+    const payload       = JSON.stringify({ correct_index, explanation })
+    const sig           = crypto.createHmac('sha256', secret).update(row.question + payload).digest('hex')
+    const token         = Buffer.from(JSON.stringify({ correct_index, explanation, sig })).toString('base64url')
     return {
-      question:      row.question,
-      options:       opts.map(o => o.text),
-      correct_index: opts.findIndex(o => o.is_correct),
-      explanation:   row.explanation,
+      question: row.question,
+      options:  opts.map(o => o.text),
+      token,
     }
   })
 
-  // Mezcla aleatoria para que no siempre salgan en el mismo orden
+  // Mezcla aleatoria
   for (let i = questions.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [questions[i], questions[j]] = [questions[j], questions[i]]

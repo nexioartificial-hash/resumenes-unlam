@@ -21,6 +21,11 @@ export async function POST(
     .gt('expires_at', new Date().toISOString()).single()
   if (!access) return NextResponse.json({ error: 'Sin acceso' }, { status: 403 })
 
+  // Verificar que el módulo pertenece a la materia (evita marcar módulos de otras materias)
+  const { data: moduleRow } = await supabase
+    .from('modules').select('id').eq('id', moduleId).eq('subject_id', subject.id).single()
+  if (!moduleRow) return NextResponse.json({ error: 'Módulo no encontrado' }, { status: 404 })
+
   // Marcar módulo como completado (upsert para no duplicar)
   const { error } = await supabase
     .from('module_progress')

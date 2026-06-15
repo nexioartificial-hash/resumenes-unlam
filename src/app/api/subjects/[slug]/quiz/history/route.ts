@@ -18,6 +18,12 @@ export async function GET(
 
   if (!subject) return NextResponse.json([], { status: 200 })
 
+  const { data: access } = await supabase
+    .from('user_subjects').select('id')
+    .eq('user_id', user.id).eq('subject_id', subject.id)
+    .gt('expires_at', new Date().toISOString()).single()
+  if (!access) return NextResponse.json({ error: 'Sin acceso' }, { status: 403 })
+
   const { data: history } = await supabase
     .from('quiz_attempts')
     .select('id, score, total, attempted_at')
