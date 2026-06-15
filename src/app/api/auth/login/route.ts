@@ -28,26 +28,26 @@ export async function POST(request: NextRequest) {
     )
   }
 
-  // Registrar sesión única — reemplaza cualquier sesión anterior
   const sessionToken = crypto.randomUUID()
   const admin = createAdminClient()
 
-  await admin.from('user_sessions').upsert(
-    {
-      user_id:       data.user.id,
-      session_token: sessionToken,
-      last_active:   new Date().toISOString(),
-      updated_at:    new Date().toISOString(),
-    },
-    { onConflict: 'user_id' }
-  )
-
-  // Verificar si debe cambiar contraseña
-  const { data: profile } = await admin
-    .from('profiles')
-    .select('must_change_pass, full_name, is_admin')
-    .eq('id', data.user.id)
-    .single()
+  // Paralelo: registrar sesión + leer perfil
+  const [, { data: profile }] = await Promise.all([
+    admin.from('user_sessions').upsert(
+      {
+        user_id:       data.user.id,
+        session_token: sessionToken,
+        last_active:   new Date().toISOString(),
+        updated_at:    new Date().toISOString(),
+      },
+      { onConflict: 'user_id' }
+    ),
+    admin
+      .from('profiles')
+      .select('must_change_pass, full_name, is_admin')
+      .eq('id', data.user.id)
+      .single(),
+  ])
 
   const response = NextResponse.json({
     user: {

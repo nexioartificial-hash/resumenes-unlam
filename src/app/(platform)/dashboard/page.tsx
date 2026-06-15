@@ -14,57 +14,34 @@ interface Subject {
   expires_at:  string | null
 }
 
-async function getSubjects(userId: string): Promise<Subject[]> {
+export default async function DashboardPage() {
   const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
 
-  const { data: subjects } = await supabase
-    .from('subjects')
-    .select('*')
-    .order('order_index')
+  const now = new Date().toISOString()
 
-  const { data: userSubjects } = await supabase
-    .from('user_subjects')
-    .select('subject_id, expires_at')
-    .eq('user_id', userId)
-    .gt('expires_at', new Date().toISOString())
+  // Un solo Promise.all con el mismo cliente — sin round-trips extras
+  const [
+    { data: profile },
+    { data: rawSubjects },
+    { data: userSubjects },
+    { data: progressData },
+  ] = await Promise.all([
+    supabase.from('profiles').select('full_name').eq('id', user!.id).single(),
+    supabase.from('subjects').select('*').order('order_index'),
+    supabase.from('user_subjects').select('subject_id, expires_at').eq('user_id', user!.id).gt('expires_at', now),
+    supabase.from('user_subject_progress').select('subject_id, progress_pct').eq('user_id', user!.id),
+  ])
 
-  const accessMap = new Map(
-    (userSubjects ?? []).map(us => [us.subject_id, us.expires_at])
-  )
+  const accessMap = new Map((userSubjects ?? []).map(us => [us.subject_id, us.expires_at]))
+  const progressMap = new Map((progressData ?? []).map(r => [r.subject_id, r.progress_pct ?? 0]))
 
-  return (subjects ?? []).map(s => ({
+  const subjects: Subject[] = (rawSubjects ?? []).map(s => ({
     ...s,
     available:  s.available ?? true,
     has_access: accessMap.has(s.id),
     expires_at: accessMap.get(s.id) ?? null,
   }))
-}
-
-async function getProgressMap(userId: string): Promise<Map<string, number>> {
-  const supabase = await createClient()
-
-  const { data } = await supabase
-    .from('user_subject_progress')
-    .select('subject_id, progress_pct')
-    .eq('user_id', userId)
-
-  return new Map((data ?? []).map(r => [r.subject_id, r.progress_pct ?? 0]))
-}
-
-export default async function DashboardPage() {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('full_name')
-    .eq('id', user!.id)
-    .single()
-
-  const [subjects, progressMap] = await Promise.all([
-    getSubjects(user!.id),
-    getProgressMap(user!.id),
-  ])
 
   const mySubjects       = subjects.filter(s => s.has_access && s.available)
   const comingSoon       = subjects.filter(s => !s.available)
