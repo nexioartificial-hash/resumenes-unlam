@@ -26,7 +26,10 @@ export interface GrantResult {
  * que aprueban horas después vía webhook cuando el usuario nunca pasó por
  * la página de éxito.
  */
-export async function grantAccess(meta: CheckoutMeta): Promise<GrantResult> {
+export async function grantAccess(
+  meta: CheckoutMeta,
+  opts: { paidAmount?: number } = {}
+): Promise<GrantResult> {
   const { email, full_name, subject_slug } = meta
   const instagram_username   = meta.instagram_username   || null
   const sendpulse_contact_id = meta.sendpulse_contact_id || null
@@ -69,11 +72,25 @@ export async function grantAccess(meta: CheckoutMeta): Promise<GrantResult> {
 
   // 3. Resolver materia y otorgar acceso por 1 año
   const { data: subject } = await supabase
-    .from('subjects').select('id, name').eq('slug', subject_slug).single()
+    .from('subjects').select('id, name, price').eq('slug', subject_slug).single()
 
   if (!subject) {
     // Sin materia no hay nada que otorgar.
     return { userId, isNewUser, granted: false }
+  }
+
+  // Tripwire de monto: la preferencia se crea server-side con el precio de la
+  // materia, así que el monto pagado SIEMPRE debería coincidir. Si no coincide,
+  // se loguea para revisión (posible cambio de precio o manipulación). No se
+  // deniega el acceso para no perjudicar a un comprador legítimo.
+  if (
+    opts.paidAmount != null &&
+    subject.price != null &&
+    opts.paidAmount + 0.5 < Number(subject.price)
+  ) {
+    console.error(
+      `[grantAccess] ⚠️ Monto pagado (${opts.paidAmount}) < precio de la materia (${subject.price}) — ${email} → ${subject_slug}. Se otorga igual; revisar manualmente.`
+    )
   }
 
   const expiresAt = new Date()

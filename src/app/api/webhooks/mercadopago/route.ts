@@ -79,6 +79,7 @@ export async function POST(req: NextRequest) {
   const payment = await mpRes.json() as {
     status: string
     external_reference: string
+    transaction_amount: number
   }
 
   if (payment.status !== 'approved') {
@@ -120,7 +121,7 @@ export async function POST(req: NextRequest) {
   try {
     // grantAccess crea la cuenta si no existe (clave para pagos en efectivo/Rapipago
     // que aprueban acá sin que el usuario haya pasado por la página de éxito).
-    await grantAccess(meta)
+    await grantAccess(meta, { paidAmount: payment.transaction_amount })
   } catch (err) {
     // Liberar el claim y pedir reintento a MP.
     await supabase.from('processed_payments').delete().eq('payment_id', String(paymentId))

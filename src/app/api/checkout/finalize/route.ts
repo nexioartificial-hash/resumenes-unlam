@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'No se pudo verificar el pago' }, { status: 400 })
   }
 
-  const payment = await mpRes.json() as { status: string; external_reference: string }
+  const payment = await mpRes.json() as { status: string; external_reference: string; transaction_amount: number }
 
   if (payment.status !== 'approved') {
     return NextResponse.json({ status: payment.status })
@@ -55,7 +55,7 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    await grantAccess(meta)
+    await grantAccess(meta, { paidAmount: payment.transaction_amount })
   } catch (err) {
     // Liberar el claim para que el webhook o un reintento puedan reprocesar.
     await supabase.from('processed_payments').delete().eq('payment_id', pid)
