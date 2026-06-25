@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import Sidebar from '@/components/layout/Sidebar'
 import Header from '@/components/layout/Header'
+import CopyGuard from '@/components/CopyGuard'
 
 export default async function PlatformLayout({
   children,
@@ -18,10 +19,11 @@ export default async function PlatformLayout({
 
   return (
     <div className="flex min-h-screen bg-crema">
+      <CopyGuard />
       <Sidebar />
       <div className="flex-1 flex flex-col min-w-0">
         <Header fullName={profile?.full_name} />
-        <main className="flex-1 p-4 overflow-auto">
+        <main className="flex-1 p-4 overflow-auto no-copy">
           {children}
         </main>
       </div>

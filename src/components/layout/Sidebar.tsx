@@ -2,68 +2,127 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { useState } from 'react'
+import { useState, useRef, useCallback } from 'react'
+
+function IconBook() {
+  return (
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/>
+      <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" stroke="currentColor" strokeWidth="1.8"/>
+    </svg>
+  )
+}
+
+function IconChart() {
+  return (
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M18 20V10M12 20V4M6 20v-6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  )
+}
 
 const NAV = [
-  { href: '/dashboard',          label: 'MIS MATERIAS', icon: '📚' },
-  { href: '/dashboard/progress', label: 'MI PROGRESO',  icon: '📊' },
+  { href: '/dashboard',          label: 'MIS MATERIAS', Icon: IconBook  },
+  { href: '/dashboard/progress', label: 'MI PROGRESO',  Icon: IconChart },
 ]
 
 export default function Sidebar() {
-  const pathname  = usePathname()
+  const pathname = usePathname()
   const [open, setOpen] = useState(true)
+  const glowRef = useRef<HTMLDivElement>(null)
+
+  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLElement>) => {
+    const r = e.currentTarget.getBoundingClientRect()
+    const x = ((e.clientX - r.left) / r.width)  * 100
+    const y = ((e.clientY - r.top)  / r.height) * 100
+    if (glowRef.current) {
+      glowRef.current.style.background =
+        `radial-gradient(circle at ${x}% ${y}%, rgba(245,214,62,0.18) 0%, transparent 55%)`
+    }
+  }, [])
 
   return (
-    <aside className={`${open ? 'w-60' : 'w-16'} bg-verde min-h-screen flex flex-col shrink-0 relative overflow-hidden transition-all duration-300`}>
-      {/* Toggle */}
-      <button
-        onClick={() => setOpen(o => !o)}
-        className="relative z-10 self-end mr-3 mt-3 flex items-center justify-center w-7 h-7 rounded-full bg-crema/10 hover:bg-amarillo/30 transition-colors text-crema/60 hover:text-crema shrink-0"
-        title={open ? 'Contraer menú' : 'Expandir menú'}
-      >
-        <span className={`text-xs transition-transform duration-300 ${open ? '' : 'rotate-180'}`}>◀</span>
-      </button>
+    <aside
+      className={`${open ? 'w-52' : 'w-14'} bg-verde min-h-screen flex flex-col shrink-0 overflow-hidden transition-all duration-300 relative`}
+      onMouseMove={handleMouseMove}
+    >
 
-      {/* Logo */}
-      <div className={`py-5 relative z-10 ${open ? 'px-6' : 'px-0 flex justify-center'}`}>
-        {open ? (
-          <div className="flex items-start gap-3">
-            <div className="w-1 h-10 bg-amarillo rounded-full shrink-0 mt-0.5" />
-            <div>
-              <p className="text-crema font-display text-xl tracking-tight leading-tight">
-                RESÚMENES<br />UNLAM
-              </p>
-              <p className="text-crema/30 text-[10px] tracking-[0.25em] mt-1.5">INGRESO</p>
-            </div>
+      {/* Dot grid */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.07) 1px, transparent 1px)',
+          backgroundSize: '28px 28px',
+        }}
+      />
+      {/* Cursor glow */}
+      <div
+        ref={glowRef}
+        className="absolute inset-0 pointer-events-none transition-[background] duration-100"
+        style={{ background: 'radial-gradient(circle at 50% 18%, rgba(245,214,62,0.14) 0%, transparent 55%)' }}
+      />
+
+      {/* Header */}
+      <div className={`relative z-10 flex items-center pt-5 pb-5 ${open ? 'px-5 gap-3' : 'flex-col items-center gap-3 px-0'}`}>
+        <div className="w-0.5 h-8 bg-amarillo rounded-full shrink-0" />
+        {open && (
+          <div className="flex-1 min-w-0">
+            <p className="text-crema font-display text-sm leading-tight tracking-tight">
+              RESÚMENES<br />UNLAM
+            </p>
+            <p className="text-crema/30 text-[9px] tracking-[0.3em] mt-1">INGRESO</p>
           </div>
-        ) : (
-          <div className="w-1 h-10 bg-amarillo rounded-full" />
         )}
+        <button
+          onClick={() => setOpen(o => !o)}
+          className="shrink-0 flex items-center justify-center w-6 h-6 rounded-xl bg-crema/10 hover:bg-crema/20 transition-colors text-crema/40 hover:text-crema/80"
+          title={open ? 'Contraer' : 'Expandir'}
+        >
+          <svg
+            width="10" height="10"
+            viewBox="0 0 24 24"
+            fill="none"
+            aria-hidden="true"
+            className={`transition-transform duration-300 ${open ? '' : 'rotate-180'}`}
+          >
+            <path d="M15 18l-6-6 6-6" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </button>
       </div>
 
-      <div className="mx-4 h-px bg-crema/10" />
+      <div className="relative z-10 mx-3 h-px bg-crema/10" />
 
-      {/* Navegación */}
-      <nav className="flex-1 px-3 py-5 space-y-1 relative z-10">
-        {NAV.map(item => {
-          const active =
-            pathname === item.href ||
-            (item.href !== '/dashboard' && pathname.startsWith(item.href))
+      {/* Nav */}
+      <nav className="relative z-10 flex-1 px-2.5 py-4 space-y-0.5">
+        {NAV.map(({ href, label, Icon }) => {
+          const active = pathname === href || (href !== '/dashboard' && pathname.startsWith(href))
           return (
             <Link
-              key={item.href}
-              href={item.href}
-              title={item.label}
-              className={`flex items-center gap-3 px-3 py-3 rounded-xl text-xs font-bold tracking-wider transition-all duration-200 ${
-                open ? '' : 'justify-center'
-              } ${
-                active
-                  ? 'bg-amarillo text-tinta shadow-sm'
-                  : 'text-crema/60 hover:bg-crema/10 hover:text-crema'
-              }`}
+              key={href}
+              href={href}
+              title={label}
+              className={`group/nav relative flex items-center rounded-xl text-[11px] font-bold tracking-wider transition-colors duration-200 ${
+                open ? 'px-3.5 py-2.5 gap-2.5' : 'justify-center py-3'
+              } ${active ? 'text-crema' : 'text-crema/55 hover:text-crema'}`}
             >
-              <span className="text-base shrink-0">{item.icon}</span>
-              {open && <span>{item.label}</span>}
+              {/* Fondo (activo / hover) */}
+              <span
+                className={`absolute inset-0 rounded-xl transition-all duration-200 ${
+                  active ? 'bg-crema/12' : 'bg-transparent group-hover/nav:bg-crema/[0.07]'
+                }`}
+              />
+              {/* Barra de acento amarilla */}
+              <span
+                className={`absolute left-0 top-1/2 -translate-y-1/2 w-1 rounded-full bg-amarillo transition-all duration-200 ${
+                  active
+                    ? 'h-5 opacity-100'
+                    : 'h-0 opacity-0 group-hover/nav:h-3 group-hover/nav:opacity-50'
+                }`}
+              />
+              <span className={`relative shrink-0 transition-colors duration-200 ${active ? 'text-amarillo' : 'text-crema/70 group-hover/nav:text-crema'}`}>
+                <Icon />
+              </span>
+              {open && <span className="relative">{label}</span>}
             </Link>
           )
         })}
@@ -71,8 +130,8 @@ export default function Sidebar() {
 
       {/* Footer */}
       {open && (
-        <div className="px-6 py-5 border-t border-crema/10 relative z-10">
-          <p className="text-crema/25 text-[10px] tracking-[0.3em]">@RESUMENES.UNLAM</p>
+        <div className="relative z-10 px-5 py-4 border-t border-crema/10">
+          <p className="text-crema/20 text-[9px] tracking-[0.3em]">@RESUMENES.UNLAM</p>
         </div>
       )}
 

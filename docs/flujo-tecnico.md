@@ -1,5 +1,8 @@
 # Flujo Técnico — Resúmenes UNLaM
 
+> ⚠️ **DESACTUALIZADO (2026-06-22).** Describe el modelo viejo (alta automática post-pago vía Instagram, webhook MP que crea usuarios y llama a n8n).
+> El funcionamiento vigente está en [funcionamiento-actual.md](./funcionamiento-actual.md).
+
 Documentación lógica y técnica del sistema completo: desde que un alumno contacta por Instagram hasta que accede a la plataforma.
 
 ---

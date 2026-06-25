@@ -1,7 +1,6 @@
 'use client'
 
-import ReactMarkdown from 'react-markdown'
-import remarkGfm from 'remark-gfm'
+import MarkdownRenderer from '@/components/content/MarkdownRenderer'
 import ReadToggle from './ReadToggle'
 import AudioPlayer from './AudioPlayer'
 
@@ -74,9 +73,7 @@ export default function ContentViewer({ item }: ContentViewerProps) {
           prose-code:bg-verde/10 prose-code:text-verde prose-code:px-1 prose-code:rounded
           prose-hr:border-tinta/10"
         >
-          <ReactMarkdown remarkPlugins={[remarkGfm]}>
-            {item.body}
-          </ReactMarkdown>
+          <MarkdownRenderer>{item.body}</MarkdownRenderer>
         </div>
       )}
       </div>

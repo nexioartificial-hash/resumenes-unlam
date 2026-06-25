@@ -8,30 +8,38 @@ interface LockedSubjectCardProps {
 
 export default function LockedSubjectCard({ name, color, slug }: LockedSubjectCardProps) {
   return (
-    <div className="rounded-2xl overflow-hidden border border-tinta/5 flex flex-col" style={{ opacity: 0.85 }}>
+    <div className="group relative flex flex-col rounded-2xl overflow-hidden bg-white border border-tinta/8 shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300">
 
-      {/* Header de color — oscurecido */}
+      {/* Bloque de color oscurecido con monograma */}
       <div
-        className="p-5 min-h-[5.5rem] flex flex-col justify-end relative overflow-hidden"
+        className="relative px-5 pt-5 pb-6 min-h-[6.5rem] flex flex-col justify-end overflow-hidden"
         style={{ backgroundColor: color }}
       >
-        <div className="absolute inset-0 bg-tinta/25" />
-        <div className="absolute top-3 right-3 z-10">
-          <span className="text-base">🔒</span>
-        </div>
-        <h3 className="font-display text-white text-xl leading-tight relative z-10">
+        <div className="pointer-events-none absolute inset-0 bg-tinta/30" />
+        <div className="pointer-events-none absolute inset-0 bg-grain opacity-[0.12] mix-blend-overlay" />
+        <span
+          className="pointer-events-none absolute -right-2 -bottom-7 font-display leading-none text-white/10 select-none"
+          style={{ fontSize: '7rem' }}
+          aria-hidden
+        >
+          {name.trim().charAt(0).toUpperCase()}
+        </span>
+        <span className="absolute top-4 right-4 text-base opacity-90">🔒</span>
+        <p className="relative text-[10px] font-bold tracking-[0.25em] text-white/50 mb-1.5">MATERIA</p>
+        <h3 className="relative font-display text-white text-lg leading-tight pr-12">
           {name.toUpperCase()}
         </h3>
       </div>
 
-      {/* Contenido inferior */}
-      <div className="p-5 pt-4 flex flex-col flex-1 bg-white/70">
-        <p className="text-[10px] font-bold text-tinta/30 tracking-wider mb-3">NO HABILITADA</p>
+      {/* Cuerpo */}
+      <div className="p-5 flex flex-col flex-1">
+        <p className="text-[10px] font-bold text-tinta/30 tracking-widest mb-4">NO HABILITADA</p>
         <Link
           href={`/checkout?subject=${slug}`}
-          className="mt-auto w-full text-center bg-verde hover:bg-verde-claro text-crema text-xs font-bold py-2 rounded-xl tracking-wider transition-colors block"
+          className="mt-auto inline-flex items-center justify-center gap-1.5 w-full bg-verde hover:bg-verde-claro text-crema text-xs font-bold py-2.5 rounded-xl tracking-wider transition-colors"
         >
-          COMPRAR ACCESO →
+          COMPRAR ACCESO
+          <span className="transition-transform duration-200 group-hover:translate-x-0.5">→</span>
         </Link>
       </div>
 

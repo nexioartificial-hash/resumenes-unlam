@@ -41,13 +41,6 @@ export default function ChangePasswordPage() {
       return
     }
 
-    // Enviar DM con credenciales (fire and forget — no bloquea el redirect)
-    fetch('/api/notify/credentials-dm', {
-      method:  'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body:    JSON.stringify({ password }),
-    }).catch(() => { /* ok */ })
-
     router.push('/dashboard')
   }
 

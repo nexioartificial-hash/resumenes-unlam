@@ -16,7 +16,13 @@ export default function Header({ fullName }: HeaderProps) {
   }
 
   return (
-    <header className="h-14 bg-crema border-b border-tinta/10 px-6 flex items-center justify-end shrink-0">
+    <header className="relative h-14 bg-crema border-b border-tinta/10 px-6 flex items-center justify-end shrink-0">
+      <div className="hidden sm:flex absolute left-1/2 -translate-x-1/2 items-center gap-2 px-3.5 py-1.5 rounded-full bg-verde/[0.06] border border-verde/15">
+        <span className="w-1.5 h-1.5 rounded-full bg-amarillo shrink-0" />
+        <p className="text-[12px] text-tinta/55">
+          Si vas a estudiar, <span className="text-verde font-semibold">que sea con nosotros</span>
+        </p>
+      </div>
       <div className="flex items-center gap-4">
         <div className="flex items-center gap-2.5">
           <div className="w-7 h-7 rounded-full bg-verde flex items-center justify-center shrink-0">

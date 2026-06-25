@@ -1,5 +1,8 @@
 # Flujo completo — Resúmenes UNLaM
 
+> ⚠️ **DESACTUALIZADO (2026-06-22).** Describe el modelo viejo (venta por DM + alta automática por Instagram).
+> El funcionamiento vigente está en [funcionamiento-actual.md](./funcionamiento-actual.md).
+
 ## Visión general
 
 ```

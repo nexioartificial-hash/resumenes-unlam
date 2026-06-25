@@ -62,6 +62,14 @@ scripts/__pycache__/
 scripts/_transcriptions.json
 scripts/_debug_img.py
 
+# Artefactos de trabajo/auditoría — contienen service_role keys hardcodeadas y/o
+# imágenes de debug. NUNCA commitear (repo público).
+scripts/_audit_*/
+scripts/_n8n_backup/
+scripts/_img_pending/
+scripts/_n8n_task56.py
+scripts/_debug_img*.png
+
 # OCR binaries
 tessdata/
 

@@ -1,5 +1,8 @@
 # Flujo de alta automática de usuarios — n8n + Webhook
 
+> ⚠️ **DESACTUALIZADO (2026-06-22).** Describe el modelo viejo (alta automática por Instagram tras pago de MP).
+> El funcionamiento vigente está en [funcionamiento-actual.md](./funcionamiento-actual.md).
+
 ## El flujo completo
 
 1. Alumno manda DM por Instagram

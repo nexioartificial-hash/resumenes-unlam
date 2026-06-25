@@ -1,9 +1,8 @@
 'use client'
 
-import { useState, useRef, useEffect, useMemo } from 'react'
+import { useState, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
-import ReactMarkdown from 'react-markdown'
-import remarkGfm from 'remark-gfm'
+import MarkdownRenderer from '@/components/content/MarkdownRenderer'
 
 interface Question {
   question: string
@@ -64,10 +63,9 @@ export default function ModuleContent({
 }: ModuleContentProps) {
   const router = useRouter()
 
-  const sections                       = useMemo(() => parseSections(initialBody), [initialBody])
-  const [completed,   setCompleted]    = useState(initialCompleted)
-  const [phase,       setPhase]        = useState<Phase>('reading')
-  const [activeId,    setActiveId]     = useState(() => parseSections(initialBody)[0]?.id ?? '')
+  const sections                    = useMemo(() => parseSections(initialBody), [initialBody])
+  const [completed, setCompleted]   = useState(initialCompleted)
+  const [phase,     setPhase]       = useState<Phase>('reading')
 
   // quiz
   const [questions,   setQuestions]   = useState<Question[]>([])
@@ -78,26 +76,6 @@ export default function ModuleContent({
   const [evaluating,  setEvaluating]  = useState(false)
   const [evalResult,  setEvalResult]  = useState<EvalResult | null>(null)
   const [score,       setScore]       = useState(0)
-
-  const sectionRefs = useRef<Record<string, HTMLElement | null>>({})
-
-  // Observer para resaltar sección activa al hacer scroll
-  useEffect(() => {
-    if (sections.length === 0) return
-    const observer = new IntersectionObserver(
-      entries => {
-        for (const e of entries) {
-          if (e.isIntersecting) setActiveId(e.target.id)
-        }
-      },
-      { rootMargin: '-20% 0px -70% 0px' }
-    )
-    sections.forEach(s => {
-      const el = document.getElementById(s.id)
-      if (el) observer.observe(el)
-    })
-    return () => observer.disconnect()
-  }, [sections])
 
   async function markComplete() {
     setPhase('completing')
@@ -255,103 +233,72 @@ export default function ModuleContent({
 
   // ── Lectura ────────────────────────────────────────────────────────
   return (
-    <div className="flex gap-6 max-w-5xl mx-auto">
-      {/* Índice lateral */}
-      {sections.length > 1 && (
-        <aside className="w-52 shrink-0 hidden lg:block">
-          <div className="sticky top-4 bg-white rounded-2xl p-4 shadow-sm border border-tinta/5">
-            <p className="text-[10px] font-bold tracking-widest text-tinta/30 mb-3">CONTENIDO</p>
-            <nav className="space-y-1">
-              {sections.map(s => (
-                <button
-                  key={s.id}
-                  onClick={() => {
-                    document.getElementById(s.id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-                    setActiveId(s.id)
-                  }}
-                  className={`w-full text-left text-xs px-2 py-1.5 rounded-xl transition-colors leading-tight ${
-                    activeId === s.id
-                      ? 'bg-verde/10 text-verde font-bold'
-                      : 'text-tinta/50 hover:text-tinta hover:bg-tinta/5'
-                  }`}
-                >
-                  {s.heading}
-                </button>
-              ))}
-            </nav>
+    <div className="max-w-4xl mx-auto">
+      {/* Header */}
+      <div className="bg-white rounded-2xl p-5 shadow-sm border border-tinta/5 mb-4 flex items-center gap-3">
+        <button onClick={() => router.push(`/dashboard/${slug}`)} className="text-tinta/40 hover:text-tinta transition-colors text-sm shrink-0">
+          ← Módulos
+        </button>
+        <div className="h-4 w-px bg-tinta/20 shrink-0" />
+        <h1 className="font-display text-verde text-lg flex-1 leading-tight">{initialTitle}</h1>
+        {completed && (
+          <span className="text-[10px] font-bold tracking-widest text-verde bg-verde/10 px-2 py-1 rounded shrink-0">✓ LEÍDO</span>
+        )}
+      </div>
+
+      {/* Secciones */}
+      <div className="space-y-4">
+        {sections.map((s, idx) => (
+          <div
+            key={s.id}
+            id={s.id}
+            className="bg-white rounded-2xl shadow-sm border border-tinta/5 overflow-hidden scroll-mt-4"
+          >
+            {/* Cabecera de sección */}
+            <div className="px-6 py-4 border-b border-tinta/5 bg-tinta/[0.02] flex items-center gap-3">
+              <span className="w-6 h-6 rounded-xl bg-verde/10 text-verde text-xs font-bold flex items-center justify-center shrink-0">
+                {idx + 1}
+              </span>
+              <h2 className="font-display text-tinta text-base">{s.heading}</h2>
+            </div>
+            {/* Contenido de sección */}
+            <div className="px-6 py-5">
+              <div className="prose prose-sm max-w-none
+                prose-headings:font-display prose-headings:text-verde
+                prose-h1:text-xl prose-h2:text-base prose-h3:text-sm prose-h3:font-bold
+                prose-p:text-tinta/80 prose-p:leading-relaxed
+                prose-strong:text-tinta
+                prose-li:text-tinta/80
+                prose-table:text-sm
+                prose-th:bg-verde/10 prose-th:text-verde prose-th:font-bold prose-th:px-3 prose-th:py-2
+                prose-td:px-3 prose-td:py-2 prose-td:border-b prose-td:border-tinta/5
+                prose-tr:even:bg-tinta/[0.02]">
+                <MarkdownRenderer breaks>{s.body}</MarkdownRenderer>
+              </div>
+            </div>
           </div>
-        </aside>
-      )}
+        ))}
+      </div>
 
-      {/* Contenido principal */}
-      <div className="flex-1 min-w-0">
-        {/* Header */}
-        <div className="bg-white rounded-2xl p-5 shadow-sm border border-tinta/5 mb-4 flex items-center gap-3">
-          <button onClick={() => router.push(`/dashboard/${slug}`)} className="text-tinta/40 hover:text-tinta transition-colors text-sm shrink-0">
-            ← Módulos
-          </button>
-          <div className="h-4 w-px bg-tinta/20 shrink-0" />
-          <h1 className="font-display text-verde text-lg flex-1 leading-tight">{initialTitle}</h1>
-          {completed && (
-            <span className="text-[10px] font-bold tracking-widest text-verde bg-verde/10 px-2 py-1 rounded shrink-0">✓ LEÍDO</span>
-          )}
-        </div>
-
-        {/* Secciones */}
-        <div className="space-y-4">
-          {sections.map((s, idx) => (
-            <div
-              key={s.id}
-              id={s.id}
-              ref={el => { sectionRefs.current[s.id] = el }}
-              className="bg-white rounded-2xl shadow-sm border border-tinta/5 overflow-hidden scroll-mt-4"
-            >
-              {/* Cabecera de sección */}
-              <div className="px-6 py-4 border-b border-tinta/5 bg-tinta/[0.02] flex items-center gap-3">
-                <span className="w-6 h-6 rounded-xl bg-verde/10 text-verde text-xs font-bold flex items-center justify-center shrink-0">
-                  {idx + 1}
-                </span>
-                <h2 className="font-display text-tinta text-base">{s.heading}</h2>
-              </div>
-              {/* Contenido de sección */}
-              <div className="px-6 py-5">
-                <div className="prose prose-sm max-w-none
-                  prose-headings:font-display prose-headings:text-verde
-                  prose-h1:text-xl prose-h2:text-base prose-h3:text-sm prose-h3:font-bold
-                  prose-p:text-tinta/80 prose-p:leading-relaxed
-                  prose-strong:text-tinta
-                  prose-li:text-tinta/80
-                  prose-table:text-sm
-                  prose-th:bg-verde/10 prose-th:text-verde prose-th:font-bold prose-th:px-3 prose-th:py-2
-                  prose-td:px-3 prose-td:py-2 prose-td:border-b prose-td:border-tinta/5
-                  prose-tr:even:bg-tinta/[0.02]">
-                  <ReactMarkdown remarkPlugins={[remarkGfm]}>{s.body}</ReactMarkdown>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Acción */}
-        <div className="bg-white rounded-2xl p-5 shadow-sm border border-tinta/5 mt-4">
-          {completed ? (
-            <div className="flex items-center justify-between">
-              <p className="text-sm text-tinta/60">Ya completaste este módulo.</p>
-              {questions.length > 0 && (
-                <button onClick={retakeQuiz} className="bg-amarillo text-tinta font-bold px-6 py-2.5 rounded-xl text-sm tracking-wider hover:bg-amarillo/80 transition-colors">
-                  HACER QUIZ NUEVAMENTE →
-                </button>
-              )}
-            </div>
-          ) : (
-            <div className="flex items-center justify-between">
-              <p className="text-sm text-tinta/60">¿Terminaste de leer este módulo?</p>
-              <button onClick={markComplete} className="bg-verde text-crema font-bold px-6 py-2.5 rounded-xl text-sm tracking-wider hover:bg-verde/80 transition-colors">
-                MARCAR COMO LEÍDO Y HACER QUIZ →
+      {/* Acción */}
+      <div className="bg-white rounded-2xl p-5 shadow-sm border border-tinta/5 mt-4">
+        {completed ? (
+          <div className="flex items-center justify-between">
+            <p className="text-sm text-tinta/60">Ya completaste este módulo.</p>
+            {questions.length > 0 && (
+              <button onClick={retakeQuiz} className="bg-amarillo text-tinta font-bold px-6 py-2.5 rounded-xl text-sm tracking-wider hover:bg-amarillo/80 transition-colors">
+                HACER QUIZ NUEVAMENTE →
               </button>
-            </div>
-          )}
-        </div>
+            )}
+          </div>
+        ) : (
+          <div className="flex items-center justify-between">
+            <p className="text-sm text-tinta/60">¿Terminaste de leer este módulo?</p>
+            <button onClick={markComplete} className="bg-verde text-crema font-bold px-6 py-2.5 rounded-xl text-sm tracking-wider hover:bg-verde/80 transition-colors">
+              MARCAR COMO LEÍDO Y HACER QUIZ →
+            </button>
+          </div>
+        )}
       </div>
     </div>
   )
