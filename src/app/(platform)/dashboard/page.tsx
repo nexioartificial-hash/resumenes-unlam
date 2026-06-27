@@ -62,7 +62,7 @@ export default async function DashboardPage() {
 
       {/* Mis materias */}
       {mySubjects.length > 0 && (
-        <section className="mb-10">
+        <section className="mb-8 sm:mb-10">
           <div className="flex items-center gap-3 mb-4">
             <div className="w-5 h-px bg-tinta/20" />
             <h2 className="text-[10px] font-bold tracking-widest text-tinta/40">MIS MATERIAS</h2>
@@ -84,7 +84,7 @@ export default async function DashboardPage() {
 
       {/* Próximamente */}
       {comingSoon.length > 0 && (
-        <section className="mb-10">
+        <section className="mb-8 sm:mb-10">
           <div className="flex items-center gap-3 mb-4">
             <div className="w-5 h-px bg-tinta/20" />
             <h2 className="text-[10px] font-bold tracking-widest text-tinta/40">PRÓXIMAMENTE</h2>

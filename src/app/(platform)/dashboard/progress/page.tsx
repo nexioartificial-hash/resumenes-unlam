@@ -190,7 +190,7 @@ export default function ProgressPage() {
       </button>
 
       {/* ── Hero ─────────────────────────────────────────── */}
-      <div className="flex items-end justify-between gap-8 mb-4">
+      <div className="flex items-end justify-between gap-4 sm:gap-8 mb-4">
         <div className="flex-1">
           <p className="text-[10px] font-bold tracking-[0.25em] text-tinta/30 mb-2">
             ESTADÍSTICAS
@@ -245,7 +245,7 @@ export default function ProgressPage() {
         <div className="grid grid-cols-3 gap-3 mb-8">
 
           {/* Temas leídos */}
-          <div className="bg-white rounded-2xl border border-tinta/5 shadow-sm p-5">
+          <div className="bg-white rounded-2xl border border-tinta/5 shadow-sm p-3 sm:p-5">
             <div style={{ borderLeft: '3px solid var(--verde)', paddingLeft: 12 }}>
               <p className="font-display text-tinta tabular-nums leading-none" style={{ fontSize: '2rem' }}>
                 {overall.completed}
@@ -258,7 +258,7 @@ export default function ProgressPage() {
           </div>
 
           {/* Quizzes */}
-          <div className="bg-white rounded-2xl border border-tinta/5 shadow-sm p-5">
+          <div className="bg-white rounded-2xl border border-tinta/5 shadow-sm p-3 sm:p-5">
             <div style={{ borderLeft: '3px solid var(--amarillo)', paddingLeft: 12 }}>
               <p className="font-display text-tinta tabular-nums leading-none" style={{ fontSize: '2rem' }}>
                 {overall.quizzes}
@@ -271,7 +271,7 @@ export default function ProgressPage() {
           </div>
 
           {/* Mejor puntaje */}
-          <div className="bg-white rounded-2xl border border-tinta/5 shadow-sm p-5">
+          <div className="bg-white rounded-2xl border border-tinta/5 shadow-sm p-3 sm:p-5">
             <div
               style={{
                 borderLeft: `3px solid ${

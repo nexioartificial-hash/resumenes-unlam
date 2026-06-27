@@ -235,7 +235,7 @@ function CheckoutContent() {
       }}>
 
         {/* Header */}
-        <div style={{ padding:'36px 36px 28px', borderBottom:'1px solid rgba(255,255,255,0.07)' }}>
+        <div style={{ padding:'clamp(24px,6vw,36px) clamp(20px,6vw,36px) 28px', borderBottom:'1px solid rgba(255,255,255,0.07)' }}>
           <p style={{ color:'rgba(255,255,255,0.35)', fontSize:'10px', fontWeight:'700', letterSpacing:'0.28em', textTransform:'uppercase', marginBottom:'14px' }}>
             Resúmenes UNLaM
           </p>
@@ -247,7 +247,7 @@ function CheckoutContent() {
         </div>
 
         {/* Descripción */}
-        <div style={{ padding:'22px 36px', borderBottom:'1px solid rgba(255,255,255,0.07)' }}>
+        <div style={{ padding:'22px clamp(20px,6vw,36px)', borderBottom:'1px solid rgba(255,255,255,0.07)' }}>
           {subject.description && (
             <p style={{ color:'rgba(255,255,255,0.65)', fontSize:'14px', lineHeight:'1.65', marginBottom: subject.benefit ? '10px' : '0' }}>
               {subject.description}
@@ -259,7 +259,7 @@ function CheckoutContent() {
         </div>
 
         {/* Precio + Email en fila */}
-        <div style={{ padding:'20px 36px', borderBottom:'1px solid rgba(255,255,255,0.07)', display:'flex', alignItems:'center', justifyContent:'space-between', gap:'16px' }}>
+        <div style={{ padding:'20px clamp(20px,6vw,36px)', borderBottom:'1px solid rgba(255,255,255,0.07)', display:'flex', alignItems:'center', justifyContent:'space-between', gap:'16px', flexWrap:'wrap' }}>
           <div>
             <p style={{ color:'rgba(255,255,255,0.3)', fontSize:'10px', fontWeight:'600', letterSpacing:'0.15em', textTransform:'uppercase', marginBottom:'4px' }}>Acceso para</p>
             <p style={{ color:'rgba(255,255,255,0.8)', fontSize:'14px', fontWeight:'500' }}>{email}</p>
@@ -273,7 +273,7 @@ function CheckoutContent() {
         </div>
 
         {/* CTA */}
-        <div style={{ padding:'28px 36px' }}>
+        <div style={{ padding:'28px clamp(20px,6vw,36px)' }}>
           {error && (
             <p style={{ color:'#ff6b6b', fontSize:'13px', marginBottom:'14px', textAlign:'center' }}>{error}</p>
           )}
