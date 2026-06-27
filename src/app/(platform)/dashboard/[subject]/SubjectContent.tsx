@@ -60,14 +60,17 @@ export default function SubjectContent({ subject, modules, content }: SubjectCon
         <div className="flex items-center gap-3 mb-3">
           <button
             onClick={() => router.push('/dashboard')}
-            className="text-tinta/40 hover:text-tinta transition-colors text-sm"
+            className="text-tinta/40 hover:text-tinta transition-colors text-sm shrink-0"
           >
             ← Volver
           </button>
-          <div className="h-4 w-px bg-tinta/20" />
-          <h1 className="font-display text-verde text-xl flex-1">
+          <div className="h-4 w-px bg-tinta/20 shrink-0" />
+          <h1 className="font-display text-verde text-lg sm:text-xl flex-1 min-w-0 truncate">
             {subject.name.toUpperCase()}
           </h1>
+        </div>
+
+        <div className="flex gap-2 overflow-x-auto -mx-1 px-1 pb-1 mb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           <button
             onClick={() => router.push(`/dashboard/${slug}/quiz`)}
             className="bg-amarillo text-tinta text-xs font-bold px-4 py-2 rounded-xl tracking-wider hover:bg-amarillo/80 transition-colors shrink-0"
@@ -108,10 +111,10 @@ export default function SubjectContent({ subject, modules, content }: SubjectCon
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-2">
+      <div className="flex gap-2 overflow-x-auto -mx-1 px-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         <button
           onClick={() => setTab('modulos')}
-          className={`text-xs font-bold px-4 py-2 rounded-xl tracking-wider transition-colors ${
+          className={`text-xs font-bold px-4 py-2 rounded-xl tracking-wider transition-colors shrink-0 ${
             tab === 'modulos'
               ? 'bg-verde text-crema'
               : 'bg-white text-tinta/50 hover:bg-tinta/5 border border-tinta/10'
@@ -122,7 +125,7 @@ export default function SubjectContent({ subject, modules, content }: SubjectCon
         {supportTypes.length > 0 && (
           <button
             onClick={() => setTab('material')}
-            className={`text-xs font-bold px-4 py-2 rounded-xl tracking-wider transition-colors ${
+            className={`text-xs font-bold px-4 py-2 rounded-xl tracking-wider transition-colors shrink-0 ${
               tab === 'material'
                 ? 'bg-verde text-crema'
                 : 'bg-white text-tinta/50 hover:bg-tinta/5 border border-tinta/10'
@@ -133,7 +136,7 @@ export default function SubjectContent({ subject, modules, content }: SubjectCon
         )}
         <button
           onClick={() => setTab('predictor')}
-          className={`text-xs font-bold px-4 py-2 rounded-xl tracking-wider transition-colors ${
+          className={`text-xs font-bold px-4 py-2 rounded-xl tracking-wider transition-colors shrink-0 ${
             tab === 'predictor'
               ? 'bg-verde text-crema'
               : 'bg-white text-tinta/50 hover:bg-tinta/5 border border-tinta/10'
@@ -190,26 +193,26 @@ export default function SubjectContent({ subject, modules, content }: SubjectCon
 
       {/* Material de apoyo */}
       {tab === 'material' && (
-        <div className="flex gap-4 flex-1 min-h-0">
-          <div className="w-64 shrink-0 bg-white rounded-2xl p-2 shadow-sm border border-tinta/5 flex flex-col gap-1 overflow-y-auto">
+        <div className="flex flex-col lg:flex-row gap-4 flex-1 min-h-0">
+          <div className="w-full lg:w-64 shrink-0 bg-white rounded-2xl p-2 shadow-sm border border-tinta/5 flex flex-row lg:flex-col gap-1 overflow-x-auto lg:overflow-y-auto">
             {content.map(item => (
               <button
                 key={item.id}
                 onClick={() => setSelectedItem(item)}
-                className={`text-left px-3 py-2.5 rounded-xl text-xs transition-colors flex items-start gap-2 ${
+                className={`text-left px-3 py-2.5 rounded-xl text-xs transition-colors flex items-center lg:items-start gap-2 shrink-0 lg:shrink ${
                   selectedItem?.id === item.id
                     ? 'bg-verde text-crema shadow-sm font-bold'
                     : 'text-tinta/50 hover:bg-tinta/5 hover:text-tinta'
                 }`}
               >
-                <span className="shrink-0 mt-0.5">
+                <span className="shrink-0 lg:mt-0.5">
                   {item.type === 'guide' ? '📝' : item.type === 'exam_model' ? '📄' : '🎧'}
                 </span>
-                <span className="line-clamp-2">{item.title}</span>
+                <span className="whitespace-nowrap lg:whitespace-normal lg:line-clamp-2">{item.title}</span>
               </button>
             ))}
           </div>
-          <div className="flex-1 overflow-y-auto">
+          <div className="flex-1 overflow-y-auto min-h-0">
             {selectedItem ? (
               <ContentViewer key={selectedItem.id} item={selectedItem} />
             ) : (
