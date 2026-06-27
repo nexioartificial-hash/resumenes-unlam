@@ -154,22 +154,22 @@ export default function QuizPage() {
         ← Volver
       </button>
 
-      <div className="bg-white rounded-2xl p-8 shadow-sm border border-tinta/5 mb-4">
+      <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-tinta/5 mb-4">
         <span className="text-[10px] font-bold tracking-widest text-tinta/40">EVALUACIÓN</span>
         <h1 className="font-display text-verde text-3xl mt-1 mb-2">SIMULACRO DE EXAMEN</h1>
         <p className="text-tinta/50 text-sm mb-8">Condiciones similares a un parcial real. Todas las preguntas, tiempo limitado.</p>
 
         <div className="flex gap-3 mb-8">
           <div className="bg-verde/5 rounded-xl px-4 py-3 text-center flex-1">
-            <p className="text-3xl font-display text-verde">{EXAM_QUESTIONS}</p>
+            <p className="text-2xl sm:text-3xl font-display text-verde">{EXAM_QUESTIONS}</p>
             <p className="text-[10px] text-tinta/40 tracking-wider mt-1">PREGUNTAS</p>
           </div>
           <div className="bg-amarillo/10 rounded-xl px-4 py-3 text-center flex-1">
-            <p className="text-3xl font-display text-amarillo">45</p>
+            <p className="text-2xl sm:text-3xl font-display text-amarillo">45</p>
             <p className="text-[10px] text-tinta/40 tracking-wider mt-1">MINUTOS</p>
           </div>
           <div className="bg-tinta/5 rounded-xl px-4 py-3 text-center flex-1">
-            <p className="text-3xl font-display text-tinta">60</p>
+            <p className="text-2xl sm:text-3xl font-display text-tinta">60</p>
             <p className="text-[10px] text-tinta/40 tracking-wider mt-1">% PARA APROBAR</p>
           </div>
         </div>
@@ -259,7 +259,7 @@ export default function QuizPage() {
           ))}
         </div>
 
-        <div className="bg-white rounded-2xl p-8 shadow-sm border border-tinta/5">
+        <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-tinta/5">
           <p className="text-tinta font-medium text-lg leading-relaxed mb-8">{q.question}</p>
 
           <div className="space-y-2.5 mb-8">
@@ -304,14 +304,14 @@ export default function QuizPage() {
     return (
       <div className="max-w-lg mx-auto space-y-4">
         {/* Resultado principal */}
-        <div className="bg-white rounded-2xl p-8 shadow-sm border border-tinta/5 text-center">
+        <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-tinta/5 text-center">
           <div className={`inline-block px-6 py-2 rounded-full text-sm font-bold tracking-widest mb-6 ${
             passed ? 'bg-verde/10 text-verde' : 'bg-rojo/10 text-rojo'
           }`}>
             {passed ? '✓ APROBADO' : '✗ DESAPROBADO'}
           </div>
 
-          <p className="text-8xl font-display text-tinta leading-none mb-1">{pctScore}<span className="text-4xl text-tinta/40">%</span></p>
+          <p className="text-6xl sm:text-8xl font-display text-tinta leading-none mb-1">{pctScore}<span className="text-4xl text-tinta/40">%</span></p>
           <p className="text-xs font-bold tracking-widest text-tinta/30 mt-2 mb-6">
             {score} CORRECTAS DE {total} PREGUNTAS
           </p>

@@ -74,7 +74,7 @@ export default function RepasoPage() {
       <button onClick={() => router.back()} className="text-tinta/40 hover:text-tinta text-sm mb-6 block">
         ← Volver
       </button>
-      <div className="bg-white rounded-2xl p-8 shadow-sm border border-tinta/5">
+      <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-tinta/5">
         <span className="text-[10px] font-bold tracking-widest text-tinta/40">ESTUDIO</span>
         <h1 className="font-display text-verde text-3xl mt-1 mb-2">REPASO INTELIGENTE</h1>
         <p className="text-tinta/50 text-sm mb-8">
@@ -132,7 +132,7 @@ export default function RepasoPage() {
           {/* Frente */}
           <div
             style={{ backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden', gridArea: '1 / 1' }}
-            className="bg-white rounded-2xl p-8 shadow-sm border border-tinta/5 flex flex-col justify-between min-h-[220px]"
+            className="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-tinta/5 flex flex-col justify-between min-h-[220px]"
           >
             <p className="text-[10px] font-bold tracking-widest text-tinta/30">
               PREGUNTA — tocá para ver la respuesta
@@ -147,7 +147,7 @@ export default function RepasoPage() {
           {/* Dorso */}
           <div
             style={{ backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden', transform: 'rotateY(180deg)', gridArea: '1 / 1' }}
-            className="bg-white rounded-2xl px-8 py-6 shadow-sm border border-verde/20 flex flex-col justify-center gap-3 min-h-[220px]"
+            className="bg-white rounded-2xl px-6 py-5 sm:px-8 sm:py-6 shadow-sm border border-verde/20 flex flex-col justify-center gap-3 min-h-[220px]"
           >
             <p className="text-[10px] font-bold tracking-widest text-verde/60">RESPUESTA CORRECTA</p>
             <p className="text-verde font-bold text-base leading-snug">{q.options[q.correct_index]}</p>
@@ -184,9 +184,9 @@ export default function RepasoPage() {
     const pct = Math.round((known / questions.length) * 100)
     return (
       <div className="max-w-lg mx-auto">
-        <div className="bg-white rounded-2xl p-8 shadow-sm border border-tinta/5 text-center">
+        <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-tinta/5 text-center">
           <span className="text-[10px] font-bold tracking-widest text-tinta/40">RESULTADO</span>
-          <p className="text-8xl font-display text-tinta leading-none mt-4 mb-1">
+          <p className="text-6xl sm:text-8xl font-display text-tinta leading-none mt-4 mb-1">
             {pct}<span className="text-4xl text-tinta/40">%</span>
           </p>
           <p className="text-xs font-bold tracking-widest text-tinta/30 mb-8">

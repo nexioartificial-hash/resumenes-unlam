@@ -64,7 +64,7 @@ export default function FlashcardsPage() {
 
   if (screen === 'loading') {
     return (
-      <div className="min-h-screen bg-crema flex items-center justify-center">
+      <div className="min-h-[70vh] flex items-center justify-center">
         <div className="text-tinta/40 text-sm">Cargando flashcards...</div>
       </div>
     )
@@ -72,7 +72,7 @@ export default function FlashcardsPage() {
 
   if (screen === 'start') {
     return (
-      <div className="min-h-screen bg-crema flex flex-col items-center justify-center gap-6 p-6">
+      <div className="min-h-[70vh] flex flex-col items-center justify-center gap-6 p-6">
         <div className="text-center">
           <h1 className="font-display text-verde text-3xl mb-2">FLASHCARDS</h1>
           <p className="text-tinta/50 text-sm">Repetición espaciada — Algoritmo SM-2</p>
@@ -121,7 +121,7 @@ export default function FlashcardsPage() {
     }
 
     return (
-      <div className="min-h-screen bg-crema flex flex-col items-center justify-center gap-6 p-6">
+      <div className="min-h-[70vh] flex flex-col items-center justify-center gap-6 p-6">
         <div className="text-center">
           <div className="text-4xl mb-3">{hadCards ? '🎉' : '📅'}</div>
           <h1 className="font-display text-verde text-2xl mb-1">
@@ -172,7 +172,7 @@ export default function FlashcardsPage() {
   const progress = Math.round(((index) / cards.length) * 100)
 
   return (
-    <div className="min-h-screen bg-crema flex flex-col p-4 gap-4">
+    <div className="min-h-[70vh] flex flex-col p-4 gap-4">
       <FeatureIntro
         featureKey="flashcards"
         icon="🃏"
@@ -255,7 +255,7 @@ export default function FlashcardsPage() {
         </div>
 
         {isFlipped && (
-          <div className="flex gap-3 w-full max-w-lg">
+          <div className="flex flex-col sm:flex-row gap-3 w-full max-w-lg">
             <button
               onClick={() => handleQuality(0)}
               className="flex-1 bg-rojo/10 text-rojo font-bold text-xs py-3 rounded-xl tracking-wider hover:bg-rojo/20 transition-colors border border-rojo/20"

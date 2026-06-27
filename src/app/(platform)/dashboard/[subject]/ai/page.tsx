@@ -171,8 +171,8 @@ export default function AIPage() {
       />
 
       {/* Header */}
-      <div className="bg-white rounded-2xl p-5 shadow-sm border border-tinta/5 mb-4 shrink-0">
-        <div className="flex items-center gap-3">
+      <div className="bg-white rounded-2xl p-4 sm:p-5 shadow-sm border border-tinta/5 mb-4 shrink-0">
+        <div className="flex items-center gap-3 flex-wrap">
           <button
             onClick={() => router.push(`/dashboard/${slug}`)}
             className="text-tinta/40 hover:text-tinta transition-colors text-sm"
@@ -187,7 +187,7 @@ export default function AIPage() {
             </h1>
           </div>
           {/* Tabs */}
-          <div className="flex gap-1 bg-tinta/5 rounded-xl p-1">
+          <div className="flex gap-1 bg-tinta/5 rounded-xl p-1 w-full sm:w-auto sm:ml-auto">
             <button
               onClick={() => setTab('chat')}
               className={`text-xs font-bold px-3 py-1.5 rounded-xl transition-colors ${
