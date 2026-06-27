@@ -28,6 +28,7 @@ function RegisterForm() {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
   )
 
+  const [name,        setName]        = useState('')
   const [email,       setEmail]       = useState('')
   const [password,    setPassword]    = useState('')
   const [confirm,     setConfirm]     = useState('')
@@ -37,6 +38,7 @@ function RegisterForm() {
   const [showPass,    setShowPass]    = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
 
+  const [focusedName,     setFocusedName]     = useState(false)
   const [focusedEmail,    setFocusedEmail]    = useState(false)
   const [focusedPassword, setFocusedPassword] = useState(false)
   const [focusedConfirm,  setFocusedConfirm]  = useState(false)
@@ -45,6 +47,10 @@ function RegisterForm() {
     e.preventDefault()
     setError('')
 
+    if (!name.trim()) {
+      setError('Ingresá tu nombre y apellido')
+      return
+    }
     if (password !== confirm) {
       setError('Las contraseñas no coinciden')
       return
@@ -59,7 +65,10 @@ function RegisterForm() {
     const { data, error: signUpError } = await supabase.auth.signUp({
       email,
       password,
-      options: { emailRedirectTo: `${window.location.origin}/auth/callback?next=/dashboard` },
+      options: {
+        data: { full_name: name.trim() },
+        emailRedirectTo: `${window.location.origin}/auth/callback?next=/dashboard`,
+      },
     })
 
     if (signUpError) {
@@ -143,6 +152,25 @@ function RegisterForm() {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
+
+            {/* Nombre */}
+            <div>
+              <label className="block text-[11px] font-bold tracking-[0.15em] mb-1.5 transition-colors" style={labelStyle(focusedName)}>
+                NOMBRE Y APELLIDO
+              </label>
+              <input
+                type="text"
+                value={name}
+                onChange={e => setName(e.target.value)}
+                onFocus={() => setFocusedName(true)}
+                onBlur={() => setFocusedName(false)}
+                required
+                autoComplete="name"
+                placeholder="Tu nombre y apellido"
+                className="w-full rounded-xl px-4 py-3.5 text-sm bg-white transition-all duration-200"
+                style={inputStyle(focusedName)}
+              />
+            </div>
 
             {/* Email */}
             <div>

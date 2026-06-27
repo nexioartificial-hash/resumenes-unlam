@@ -139,7 +139,7 @@ Leé cada módulo completo antes de usar las preguntas orientadoras. Los **conce
 - **Actividad física**: cualquier movimiento generado por los músculos esqueléticos que implique un gasto de energía superior al **metabolismo basal** (energía mínima para mantener los procesos vitales en reposo).
 - **Metabolismo basal**: gasto energético mínimo para mantener las funciones vitales en reposo (respiración, circulación, temperatura, etc.). Base para calcular el gasto energético total.
 - **Catabolismo y anabolismo**: catabolismo = degradación de moléculas complejas para obtener energía (libera ATP). Anabolismo = síntesis de moléculas complejas usando energía (gasta ATP). La actividad física potencia ambos procesos.
-- **Atributos de la actividad física**: intensidad (ligera/moderada/vigorosa), frecuencia, duración, tipo (aeróbica/anaeróbica) y contexto (laboral, recreativo, deportivo).
+- **Atributos de la actividad física**: intensidad (ligera/moderada/vigorosa), frecuencia, duración, tipo (deportiva, recreativa o de rehabilitación) y contexto (laboral, recreativo, deportivo).
 - **Beneficios de la actividad física regular**: cardiovasculares (reduce presión arterial, mejora circulación), metabólicos (control de glucemia, lípidos), musculoesqueléticos (fortalece huesos y músculos), psicológicos (reduce estrés, depresión), inmunológicos.
 - **Sedentarismo**: principal factor de riesgo modificable para enfermedades crónicas no transmisibles (ECNT): diabetes tipo 2, hipertensión, obesidad, enfermedades cardiovasculares. La OMS recomienda al menos 150 min de actividad moderada por semana para adultos.
 
@@ -183,7 +183,7 @@ Leé cada módulo completo antes de usar las preguntas orientadoras. Los **conce
 | **Intensidad** | Ligera, moderada, vigorosa | Caminar vs. correr |
 | **Frecuencia** | Veces por semana | 3 veces/semana |
 | **Duración** | Tiempo de cada sesión | 30-60 minutos |
-| **Tipo** | Aeróbica vs. anaeróbica | Natación vs. pesas |
+| **Tipo** | Deportiva, recreativa o de rehabilitación | Fútbol vs. gimnasia terapéutica |
 | **Contexto** | Laboral, recreativo, deportivo | Trabajo en obra vs. fútbol |
 """
 

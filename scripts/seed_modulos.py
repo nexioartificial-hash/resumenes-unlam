@@ -12,9 +12,6 @@ import requests
 import sys, io, re, os, argparse
 from datetime import datetime, timezone
 
-sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
-sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='replace')
-
 # Cargar .env.local para que ANTHROPIC_API_KEY esté disponible en subprocesos
 _ENV_FILE = os.path.join(os.path.dirname(os.path.dirname(__file__)), '.env.local')
 if os.path.exists(_ENV_FILE):
@@ -178,7 +175,7 @@ def fix_word_breaks(lines):
         line = lines[i]
         s = line.strip()
 
-        if not s or s.startswith('#') or s.startswith('__IMG_') or _is_formula_row(s):
+        if not s or s.startswith('#') or s.startswith('__IMG_') or s.startswith('|') or _is_formula_row(s):
             result.append(s)
             i += 1
             continue
@@ -188,8 +185,8 @@ def fix_word_breaks(lines):
         while i < len(lines):
             ns = lines[i].strip()
             if (not ns or ns.startswith('#') or ns.startswith('-') or ns.startswith('•') or
-                    ns.startswith('__IMG_') or ns.startswith('  - ') or _is_formula_row(ns) or
-                    re.match(r'^\d{1,2}[\.\)]\s', ns)):  # items de lista numerada
+                    ns.startswith('__IMG_') or ns.startswith('|') or ns.startswith('  - ') or
+                    _is_formula_row(ns) or re.match(r'^\d{1,2}[\.\)]\s', ns)):
                 break
             next_raw = lines[i].rstrip('\r\n')
             curr_end = current.rstrip()
@@ -218,7 +215,13 @@ def fix_word_breaks(lines):
                         _head_m.group().lower() != _tail_m.group().lower()):
                     current = curr_end[:_tail_m.start()] + next_raw
                 else:
-                    current = current + next_raw
+                    # Agregar espacio cuando ambos lados son palabras completas en contacto
+                    # (artefacto de salto de línea sin guión en columnas PDF)
+                    if (curr_end and curr_end[-1].isalpha() and
+                            next_raw and not next_raw[0].isspace() and next_raw[0].islower()):
+                        current = curr_end + ' ' + next_raw.lstrip()
+                    else:
+                        current = current + next_raw
             i += 1
 
         current = current.strip()
@@ -348,13 +351,26 @@ def detect_config(doc):
             j = i + 1
             while j < len(raw) and not raw[j].strip(): j += 1
             if j < len(raw):
-                ns   = raw[j].strip()
-                size = font_map.get(ns, (False, 11.0))[1]
-                if (size >= 16.0 and not _module_re.match(ns)
+                ns        = raw[j].strip()
+                size_info = font_map.get(ns)
+                if size_info is None:
+                    for fk, fv in font_map.items():
+                        if ns and ns in fk:
+                            size_info = fv
+                            break
+                size = size_info[1] if size_info else 11.0
+                is_cont = (
+                    ns and not _module_re.match(ns) and
+                    WATERMARK not in ns and ns not in cover_parts and
+                    len(ns) <= 22 and ns[0].isupper() and
+                    not ns.startswith('- ') and not ns.startswith('•') and
+                    not re.match(r'^\d+[\.\)]\s', ns) and not ns.endswith(':')
+                )
+                if ((size >= 16.0 or is_cont) and not _module_re.match(ns)
                         and WATERMARK not in ns and ns not in cover_parts):
                     multiline_count += 1
 
-    module_heading_multiline = heading_count > 0 and (multiline_count / heading_count) > 0.5
+    module_heading_multiline = heading_count > 0 and multiline_count > 0
 
     # Paso 5: detectar estilo de subheadings
     heading_sizes = {text for text, _, _ in all_lines if _module_re.match(text)}
@@ -480,6 +496,80 @@ def fix_embedded_lists(body):
     return re.sub(r'\n{3,}', '\n\n', '\n'.join(result))
 
 
+# ── Detección de tablas multi-columna ────────────────────────────────────────
+
+def _try_format_tables(text_blocks):
+    """
+    Detecta grillas de tabla: grupos de bloques de texto al mismo Y con ≥2 columnas.
+    Retorna (set_de_ids_reemplazados, [(id_ref, markdown), ...]) o None.
+    Solo activa para celdas cortas (promedio ≤150 chars) para no confundir con
+    layouts de dos columnas de párrafos largos.
+    """
+    if len(text_blocks) < 4:
+        return None
+
+    Y_TOL = 8  # pt — tolerancia para "misma fila"
+    row_map = {}
+    for b in text_blocks:
+        yk = round(b[1] / Y_TOL)
+        row_map.setdefault(yk, []).append(b)
+
+    sorted_ys = sorted(row_map.keys())
+
+    # Encontrar runs de ≥2 filas multi-columna consecutivas
+    runs, current_run = [], []
+    for yk in sorted_ys:
+        if len(row_map[yk]) >= 2:
+            current_run.append(yk)
+        else:
+            if len(current_run) >= 2:
+                runs.append(current_run[:])
+            current_run = []
+    if len(current_run) >= 2:
+        runs.append(current_run)
+
+    if not runs:
+        return None
+
+    all_replaced = set()
+    table_mds    = []
+
+    for run in runs:
+        run_blocks = [b for yk in run for b in row_map[yk]]
+        total_chars = sum(len(b[4].replace('\n', ' ')) for b in run_blocks)
+        avg_len = total_chars / len(run_blocks) if run_blocks else 0
+        if avg_len > 150:
+            continue  # layout de columnas de párrafos, no tabla
+
+        min_cols = min(len(row_map[yk]) for yk in run)
+        if min_cols < 2:
+            continue
+
+        rows = []
+        for yk in run:
+            row_b = sorted(row_map[yk], key=lambda b: b[0])
+            # Incluir TODAS las celdas de cada fila (sin truncar)
+            cells = [b[4].replace('\n', ' ').strip() for b in row_b]
+            rows.append(cells)
+
+        if len(rows) < 2:
+            continue
+
+        # Normalizar al máximo de columnas para no perder contenido
+        n_cols = max(len(r) for r in rows)
+        norm   = [r + [''] * (n_cols - len(r)) for r in rows]
+
+        md  = '| ' + ' | '.join(norm[0]) + ' |\n'
+        md += '| ' + ' | '.join(['---'] * n_cols) + ' |\n'
+        md += '\n'.join('| ' + ' | '.join(r) + ' |' for r in norm[1:])
+
+        ref_block = min(run_blocks, key=lambda b: b[1])
+        all_replaced.update(id(b) for b in run_blocks)
+        table_mds.append((id(ref_block), md))
+
+    return (all_replaced, table_mds) if table_mds else None
+
+
 # ── Orden de lectura con detección de columnas ───────────────────────────────
 
 # PDFs que usan espacios para simular dos columnas dentro de un mismo bloque.
@@ -563,6 +653,26 @@ def _page_lines_ordered(page):
 
     if not all_blocks:
         return []
+
+    # ── Detectar y reemplazar grillas de tabla antes del análisis de columnas ─
+    _tbl = _try_format_tables(text_blocks)
+    if _tbl is not None:
+        _replaced_ids, _table_mds = _tbl
+        _md_by_ref = dict(_table_mds)
+        _inserted  = set()
+        new_all    = []
+        for b in all_blocks:
+            bid = id(b)
+            if bid in _replaced_ids:
+                if bid in _md_by_ref and bid not in _inserted:
+                    new_all.append((b[0], b[1], b[2], b[3], _md_by_ref[bid]))
+                    _inserted.add(bid)
+                # else: bloque de tabla ya emitido o no ref → skip
+            else:
+                new_all.append(b)
+        all_blocks  = new_all
+        text_blocks = [b for b in all_blocks
+                       if not b[4].startswith('__IMG_') and not b[4].startswith('|')]
 
     def _block_lines(b):
         txt = b[4]
@@ -671,10 +781,23 @@ def extract(doc, cfg):
                     j = i + 1
                     while j < len(raw_lines) and not raw_lines[j].strip(): j += 1
                     if j < len(raw_lines):
-                        ns   = raw_lines[j].strip()
-                        size = font_map.get(ns, (False, 11.0))[1]
-                        if (size >= 16.0 and not _module_re.match(ns)
-                            and WATERMARK not in ns and ns not in cover_parts):
+                        ns        = raw_lines[j].strip()
+                        size_info = font_map.get(ns)
+                        if size_info is None:
+                            for fk, fv in font_map.items():
+                                if ns and ns in fk:
+                                    size_info = fv
+                                    break
+                        size = size_info[1] if size_info else 11.0
+                        is_title_cont = (
+                            ns and not _module_re.match(ns) and
+                            WATERMARK not in ns and ns not in cover_parts and
+                            len(ns) <= 22 and ns[0].isupper() and
+                            not ns.startswith('- ') and not ns.startswith('•') and
+                            not re.match(r'^\d+[\.\)]\s', ns) and not ns.endswith(':')
+                        )
+                        if ((size >= 16.0 or is_title_cont) and not _module_re.match(ns)
+                                and WATERMARK not in ns and ns not in cover_parts):
                             heading = heading + ' ' + ns
                             i = j
                 lines_out.append(f'## {heading}')
@@ -781,6 +904,42 @@ def _ocr_image_bytes(img_bytes):
         return None
 
 
+# ── Imágenes: colorspace y fondo blanco ─────────────────────────────────────
+
+def _fix_image_bg(doc, xref, original_data, ext, page=None, rect=None):
+    """
+    Renderiza la imagen desde la página del PDF para incluir el fondo blanco del documento.
+    Resuelve imágenes con fondo negro bakeado que el PDF compone sobre blanco.
+    Si no hay página/rect disponible, fallback a conversión de colorspace con Pixmap.
+    """
+    try:
+        if page is not None and rect is not None:
+            mat = fitz.Matrix(2, 2)  # 2x para mejor calidad
+            pix = page.get_pixmap(matrix=mat, clip=rect, colorspace=fitz.csRGB)
+            fmt = 'jpeg' if ext in ('jpg', 'jpeg') else 'png'
+            return pix.tobytes(fmt)
+        # Fallback: Pixmap con conversión de colorspace (CMYK, alpha)
+        pix = fitz.Pixmap(doc, xref)
+        if pix.colorspace and pix.colorspace.n > 3:
+            pix = fitz.Pixmap(fitz.csRGB, pix)
+        if pix.alpha:
+            from PIL import Image
+            import io as _io
+            pil = Image.open(_io.BytesIO(pix.tobytes('png'))).convert('RGBA')
+            bg  = Image.new('RGB', pil.size, (255, 255, 255))
+            bg.paste(pil, mask=pil.split()[3])
+            buf = _io.BytesIO()
+            if ext in ('jpg', 'jpeg'):
+                bg.save(buf, format='JPEG', quality=92)
+            else:
+                bg.save(buf, format='PNG')
+            return buf.getvalue()
+        fmt = 'jpeg' if ext in ('jpg', 'jpeg') else 'png'
+        return pix.tobytes(fmt)
+    except Exception:
+        return original_data
+
+
 # ── Imágenes: Storage ────────────────────────────────────────────────────────
 
 def _body_text_only(body):
@@ -818,6 +977,17 @@ def _upload_images(doc, body, subject_slug):
     ocr_done = 0
     errors   = 0
 
+    # Mapa xref → (page, rect) para renderizar con fondo blanco del PDF
+    _xref_page_map = {}
+    for _pnum in range(len(doc)):
+        _pg = doc[_pnum]
+        for _img in _pg.get_images(full=True):
+            _ix = _img[0]
+            if _ix not in _xref_page_map:
+                _rects = _pg.get_image_rects(_ix)
+                if _rects:
+                    _xref_page_map[_ix] = (_pg, _rects[0])
+
     # Leer transcripciones previas escritas por Claude (modo dos pasos)
     _tx_file = os.path.join(os.path.dirname(os.path.dirname(__file__)),
                             'scripts', '_transcriptions.json')
@@ -846,6 +1016,10 @@ def _upload_images(doc, body, subject_slug):
         data = img_data.get('image', b'')
         if not data:
             continue
+
+        # Renderizar desde la página para incluir fondo blanco del PDF
+        _pg_info = _xref_page_map.get(xref, (None, None))
+        data = _fix_image_bg(doc, xref, data, ext, _pg_info[0], _pg_info[1])
 
         # Intentar OCR si parece imagen de texto/fórmula
         if _is_text_image(data):
@@ -962,6 +1136,8 @@ def _resolve_subject_id(slug):
 
 
 def main():
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
+    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='replace')
     parser = argparse.ArgumentParser(description='Carga módulos de una materia en Supabase.')
     parser.add_argument('--pdf',              required=True,  help='Ruta al PDF fuente')
     parser.add_argument('--subject-id',       default=None,   help='UUID del subject en Supabase')
