@@ -195,3 +195,25 @@ h1, h2, h3 {
     white-space: nowrap;
   }
 }
+
+/* ── Panel lateral del mapa de conocimiento ──
+   Lateral flotante en desktop; bottom-sheet a ancho completo en móvil. */
+.km-side-panel {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 300px;
+  border-radius: 16px;
+}
+@media (max-width: 1023px) {
+  .km-side-panel {
+    top: auto;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: auto;
+    border-radius: 16px 16px 0 0;
+    max-height: 60vh;
+    overflow-y: auto;
+  }
+}

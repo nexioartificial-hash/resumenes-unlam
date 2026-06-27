@@ -162,13 +162,8 @@ function SidePanel({ data, slug, onClose }: { data: PanelData; slug: string; onC
   const router = useRouter()
 
   return (
-    <div style={{
-      position:      'absolute',
-      top:           '16px',
-      right:         '16px',
-      width:         '300px',
+    <div className="km-side-panel" style={{
       background:    '#fff',
-      borderRadius:  '16px',
       padding:       '20px',
       boxShadow:     '0 4px 24px rgba(0,0,0,0.14)',
       border:        '1px solid rgba(10,10,10,0.08)',
@@ -410,7 +405,8 @@ function KnowledgeMapInner({ mastery, slug, nodes: MAP_NODES, edges: MAP_EDGES }
               fontSize:   '12px',
               color:      '#0A0A0A',
               background: 'transparent',
-              width:      '200px',
+              width:      '140px',
+              maxWidth:   '40vw',
             }}
           />
           {searchQuery && (
@@ -442,10 +438,12 @@ function KnowledgeMapInner({ mastery, slug, nodes: MAP_NODES, edges: MAP_EDGES }
         position:   'absolute',
         bottom:     '16px',
         left:       '16px',
+        right:      '16px',
         zIndex:     10,
         display:    'flex',
         gap:        '8px',
         alignItems: 'center',
+        flexWrap:   'wrap',
       }}>
         <button
           onClick={() => { setExpandedModules(new Set()); setSelectedPanel(null); setSearchQuery('') }}

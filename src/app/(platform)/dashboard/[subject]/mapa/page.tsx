@@ -40,7 +40,7 @@ export default function MapaPage() {
   }, [slug, hasMap])
 
   return (
-    <div className="flex flex-col" style={{ height: '100vh' }}>
+    <div className="flex flex-col" style={{ height: 'calc(100dvh - 3.5rem)' }}>
       <FeatureIntro
         featureKey="mapa"
         icon="🗺️"
