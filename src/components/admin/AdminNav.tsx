@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useMobileNav } from '@/components/layout/MobileNavProvider'
 
 const NAV = [
   { href: '/admin',          label: 'INICIO',    icon: '🏠', exact: true },
@@ -14,9 +15,21 @@ const NAV = [
 
 export default function AdminNav() {
   const pathname = usePathname()
+  const { open: mobileOpen, close } = useMobileNav()
 
   return (
-    <aside className="w-60 bg-verde min-h-screen flex flex-col shrink-0 relative overflow-hidden">
+    <>
+      {/* Backdrop móvil */}
+      {mobileOpen && (
+        <div onClick={close} className="fixed inset-0 bg-tinta/50 z-40 lg:hidden" aria-hidden="true" />
+      )}
+
+      <aside className={`
+        bg-verde flex flex-col overflow-hidden relative w-60
+        fixed inset-y-0 left-0 z-50 transition-transform duration-300
+        ${mobileOpen ? 'translate-x-0' : '-translate-x-full'}
+        lg:static lg:translate-x-0 lg:z-auto lg:min-h-screen lg:shrink-0 lg:transition-none
+      `}>
       {/* Logo */}
       <div className="px-6 py-7 relative z-10">
         <div className="flex items-start gap-3">
@@ -45,6 +58,7 @@ export default function AdminNav() {
             <Link
               key={item.href}
               href={item.href}
+              onClick={close}
               className={`flex items-center gap-3 px-3 py-3 rounded-xl text-xs font-bold tracking-wider transition-all duration-200 ${
                 isActive
                   ? 'bg-amarillo text-tinta shadow-sm'
@@ -62,11 +76,13 @@ export default function AdminNav() {
       <div className="px-6 py-5 border-t border-crema/10 relative z-10">
         <Link
           href="/dashboard"
+          onClick={close}
           className="text-crema/30 text-[10px] tracking-wider hover:text-crema/60 transition-colors"
         >
           ← Plataforma
         </Link>
       </div>
     </aside>
+    </>
   )
 }

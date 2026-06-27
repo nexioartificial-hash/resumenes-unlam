@@ -1,6 +1,8 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import AdminNav from '@/components/admin/AdminNav'
+import AdminMobileBar from '@/components/admin/AdminMobileBar'
+import MobileNavProvider from '@/components/layout/MobileNavProvider'
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient()
@@ -16,11 +18,16 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   if (!profile?.is_admin) redirect('/dashboard')
 
   return (
-    <div className="flex min-h-screen bg-crema">
-      <AdminNav />
-      <main className="flex-1 p-8 overflow-y-auto">
-        {children}
-      </main>
-    </div>
+    <MobileNavProvider>
+      <div className="flex min-h-screen bg-crema">
+        <AdminNav />
+        <div className="flex-1 flex flex-col min-w-0">
+          <AdminMobileBar />
+          <main className="flex-1 p-4 lg:p-8 overflow-y-auto">
+            {children}
+          </main>
+        </div>
+      </div>
+    </MobileNavProvider>
   )
 }
