@@ -25,10 +25,10 @@ export default function AdminNav() {
       )}
 
       <aside className={`
-        bg-verde flex flex-col overflow-hidden relative w-60
+        bg-verde flex flex-col overflow-hidden w-60
         fixed inset-y-0 left-0 z-50 transition-transform duration-300
         ${mobileOpen ? 'translate-x-0' : '-translate-x-full'}
-        lg:static lg:translate-x-0 lg:z-auto lg:min-h-screen lg:shrink-0 lg:transition-none
+        lg:relative lg:inset-auto lg:translate-x-0 lg:z-auto lg:min-h-screen lg:shrink-0 lg:transition-none
       `}>
       {/* Logo */}
       <div className="px-6 py-7 relative z-10">

@@ -56,10 +56,10 @@ export default function Sidebar() {
 
       <aside
         className={`
-          bg-verde flex flex-col overflow-hidden relative
-          fixed inset-y-0 left-0 z-50 w-64 transition-transform duration-300
+          bg-verde flex flex-col overflow-hidden z-50 w-64
+          fixed inset-y-0 left-0 transition-transform duration-300
           ${mobileOpen ? 'translate-x-0' : '-translate-x-full'}
-          lg:static lg:translate-x-0 lg:z-auto lg:min-h-screen lg:shrink-0 lg:transition-all
+          lg:relative lg:inset-auto lg:translate-x-0 lg:z-auto lg:min-h-screen lg:shrink-0 lg:transition-all
           ${open ? 'lg:w-52' : 'lg:w-14'}
         `}
         onMouseMove={handleMouseMove}
