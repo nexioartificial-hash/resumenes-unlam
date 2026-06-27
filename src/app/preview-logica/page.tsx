@@ -18,10 +18,17 @@ const TEMAS: Record<number, string> = {
 
 export default function PreviewLogica() {
   const dir = path.join(process.cwd(), 'scripts', '_audit_logica', 'fixed')
-  const mods = [1, 2, 3, 4, 5, 6].map((n) => ({
-    n,
-    body: fs.readFileSync(path.join(dir, `modulo_0${n}.md`), 'utf8'),
-  }))
+  // Los .md viven solo localmente (gitignorados). En entornos sin esos archivos
+  // (p. ej. el build de Vercel) no debe romper el build: se omite el módulo.
+  const mods = [1, 2, 3, 4, 5, 6]
+    .map((n) => {
+      try {
+        return { n, body: fs.readFileSync(path.join(dir, `modulo_0${n}.md`), 'utf8') }
+      } catch {
+        return { n, body: '' }
+      }
+    })
+    .filter((m) => m.body)
 
   return (
     <div style={{ minHeight: '100vh', backgroundColor: 'var(--crema)' }} className="py-10 px-4">
