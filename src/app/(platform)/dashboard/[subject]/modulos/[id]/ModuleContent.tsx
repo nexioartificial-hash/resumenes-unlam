@@ -135,7 +135,7 @@ export default function ModuleContent({
   // ── Guardando / Cargando quiz ──────────────────────────────────────
   if (phase === 'completing') return (
     <div className="max-w-2xl mx-auto">
-      <div className="bg-white rounded-2xl p-12 shadow-sm border border-tinta/5 text-center">
+      <div className="bg-white rounded-2xl p-8 sm:p-12 shadow-sm border border-tinta/5 text-center">
         <div className="text-5xl mb-4 animate-pulse">📝</div>
         <p className="font-display text-verde text-xl">CARGANDO QUIZ...</p>
         <p className="text-tinta/40 text-sm mt-2">Un momento</p>
@@ -146,7 +146,7 @@ export default function ModuleContent({
   // ── Completado sin quiz ────────────────────────────────────────────
   if (phase === 'done') return (
     <div className="max-w-2xl mx-auto">
-      <div className="bg-white rounded-2xl p-12 shadow-sm border border-tinta/5 text-center">
+      <div className="bg-white rounded-2xl p-8 sm:p-12 shadow-sm border border-tinta/5 text-center">
         <div className="text-6xl mb-4">✅</div>
         <p className="font-display text-3xl text-tinta mb-2">¡Módulo completado!</p>
         <p className="text-tinta/50 text-sm mb-8">Este módulo no tiene quiz asociado.</p>
@@ -165,7 +165,7 @@ export default function ModuleContent({
     const q = questions[current]
     return (
       <div className="max-w-2xl mx-auto">
-        <div className="bg-white rounded-2xl p-6 shadow-sm border border-tinta/5 mb-4">
+        <div className="bg-white rounded-2xl p-5 sm:p-6 shadow-sm border border-tinta/5 mb-4">
           <div className="flex items-center justify-between mb-4">
             <p className="text-[10px] font-bold tracking-widest text-tinta/40">QUIZ — {moduleTitle.toUpperCase()}</p>
             <p className="text-xs font-bold text-tinta/40">{current + 1} / {questions.length}</p>
@@ -211,7 +211,7 @@ export default function ModuleContent({
     const pct = Math.round((score / questions.length) * 100)
     return (
       <div className="max-w-2xl mx-auto">
-        <div className="bg-white rounded-2xl p-8 shadow-sm border border-tinta/5 text-center">
+        <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-tinta/5 text-center">
           <div className="text-6xl mb-4">{pct >= 70 ? '🎉' : '📚'}</div>
           <p className="font-display text-3xl text-tinta mb-1">{score} / {questions.length}</p>
           <p className={`text-lg font-bold mb-2 ${pct >= 70 ? 'text-verde' : 'text-amarillo'}`}>{pct}% correcto</p>
@@ -235,7 +235,7 @@ export default function ModuleContent({
   return (
     <div className="max-w-4xl mx-auto">
       {/* Header */}
-      <div className="bg-white rounded-2xl p-5 shadow-sm border border-tinta/5 mb-4 flex items-center gap-3">
+      <div className="bg-white rounded-2xl p-4 sm:p-5 shadow-sm border border-tinta/5 mb-4 flex items-center gap-3 flex-wrap">
         <button onClick={() => router.push(`/dashboard/${slug}`)} className="text-tinta/40 hover:text-tinta transition-colors text-sm shrink-0">
           ← Módulos
         </button>
@@ -255,14 +255,14 @@ export default function ModuleContent({
             className="bg-white rounded-2xl shadow-sm border border-tinta/5 overflow-hidden scroll-mt-4"
           >
             {/* Cabecera de sección */}
-            <div className="px-6 py-4 border-b border-tinta/5 bg-tinta/[0.02] flex items-center gap-3">
+            <div className="px-4 sm:px-6 py-4 border-b border-tinta/5 bg-tinta/[0.02] flex items-center gap-3">
               <span className="w-6 h-6 rounded-xl bg-verde/10 text-verde text-xs font-bold flex items-center justify-center shrink-0">
                 {idx + 1}
               </span>
               <h2 className="font-display text-tinta text-base">{s.heading}</h2>
             </div>
             {/* Contenido de sección */}
-            <div className="px-6 py-5">
+            <div className="px-4 sm:px-6 py-5">
               <div className="prose prose-sm max-w-none
                 prose-headings:font-display prose-headings:text-verde
                 prose-h1:text-xl prose-h2:text-base prose-h3:text-sm prose-h3:font-bold
@@ -283,18 +283,18 @@ export default function ModuleContent({
       {/* Acción */}
       <div className="bg-white rounded-2xl p-5 shadow-sm border border-tinta/5 mt-4">
         {completed ? (
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <p className="text-sm text-tinta/60">Ya completaste este módulo.</p>
             {questions.length > 0 && (
-              <button onClick={retakeQuiz} className="bg-amarillo text-tinta font-bold px-6 py-2.5 rounded-xl text-sm tracking-wider hover:bg-amarillo/80 transition-colors">
+              <button onClick={retakeQuiz} className="w-full sm:w-auto bg-amarillo text-tinta font-bold px-6 py-2.5 rounded-xl text-sm tracking-wider hover:bg-amarillo/80 transition-colors">
                 HACER QUIZ NUEVAMENTE →
               </button>
             )}
           </div>
         ) : (
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <p className="text-sm text-tinta/60">¿Terminaste de leer este módulo?</p>
-            <button onClick={markComplete} className="bg-verde text-crema font-bold px-6 py-2.5 rounded-xl text-sm tracking-wider hover:bg-verde/80 transition-colors">
+            <button onClick={markComplete} className="w-full sm:w-auto bg-verde text-crema font-bold px-6 py-2.5 rounded-xl text-sm tracking-wider hover:bg-verde/80 transition-colors">
               MARCAR COMO LEÍDO Y HACER QUIZ →
             </button>
           </div>
